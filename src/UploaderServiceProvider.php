@@ -12,4 +12,13 @@ class UploaderServiceProvider extends ServiceProvider
         $this->app->bind('browner12\uploader\UploaderInterface', 'browner12\uploader\Uploader');
     }
 
+    /**
+     * boot
+     */
+    public function boot()
+    {
+        $this->publishes([
+            __DIR__.'/config/uploader.php' => config_path('uploader.php'),
+        ]);
+    }
 }
