@@ -6,9 +6,6 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 
 /**
  * uploader library
- *
- * Centralized location for uploading files (images and documents)
- * ran into issue once when i changed some folder structure of where certain types of images were stored, was a PITA to locate every place I used it
  */
 class Uploader implements UploaderInterface
 {
@@ -87,7 +84,6 @@ class Uploader implements UploaderInterface
      * upload entity picture (user, coach, player, manager, school, team, multimedia)
      *
      * function only returns false if upload fails, not if optimization and thumbnails fail
-     * if they do we should try and take care of them in a cron
      *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
@@ -311,5 +307,4 @@ class Uploader implements UploaderInterface
             throw new UploaderException('File does not have an approved type: ' . implode(', ', $haystack));
         }
     }
-
 }

@@ -31,5 +31,4 @@ interface UploaderInterface
      * @return
      */
     public function reprocess($path);
-
 }
