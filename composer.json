@@ -17,6 +17,7 @@
     ],
     "require": {
         "php": ">=5.6.0",
+        "illuminate/support": "~5.2",
         "intervention/image": "~2",
         "symfony/symfony": "~2"
     },
