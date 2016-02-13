@@ -81,7 +81,7 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * upload entity picture (user, coach, player, manager, school, team, multimedia)
+     * upload picture
      *
      * function only returns false if upload fails, not if optimization and thumbnails fail
      *
@@ -91,7 +91,7 @@ class Uploader implements UploaderInterface
      * @return bool
      * @throws \browner12\uploader\UploaderException
      */
-    function picture(UploadedFile $file, $path, $newId)
+    public function picture(UploadedFile $file, $path, $newId)
     {
         //check size
         $this->checkSize($file->getSize());
@@ -203,7 +203,7 @@ class Uploader implements UploaderInterface
      * @return bool
      * @throws \browner12\uploader\UploaderException
      */
-    function document(UploadedFile $file, $path, $newId)
+    public function document(UploadedFile $file, $path, $newId)
     {
         //check extension
         $this->checkExtension($file->getClientOriginalExtension(), 'document');
