@@ -17,11 +17,43 @@ Via Composer
 $ composer require browner12/uploader
 ```
 
+## Setup
+
+Add the service provider to the providers array in  `config/app.php`.
+
+``` php
+'providers' => [
+    browner12\uploader\UploaderServiceProvider::class,
+];
+```
+
 ## Usage
+
+Start by manually instantiating the uploader
 
 ``` php
 $uploader = new Uploader();
+```
+
+or using dependency injection.
+
+``` php
+public function __construct(Uploader $uploader)
+{
+    $this->uploader = $uploader;
+}
+```
+
+There are two main methods with the uploader. One is for uploading images
+
+``` php
 $uploader->picture($file, $path, $filename);
+```
+
+and the other is for uploading documents.
+
+``` php
+$uploader->document($file, $path, $filename);
 ```
 
 ## Change log
