@@ -1,12 +1,14 @@
 # Changelog
 
-All Notable changes to `uploader` will be documented in this file.
+All notable changes to `browner12/uploader` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
 ## UNRELEASED
 
-## 0.1.0 - 2016-01-20
+## 1.0.0 - 2016-02-20
 
 ### Added
-- initial release
+- new uploader package
+
+[unreleased]: https://github.com/browner12/uploader/compare/v1.0.0...HEAD
