@@ -10,38 +10,35 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class Uploader implements UploaderInterface
 {
     /**
-     * max file size in KB
+     * valid document extensions
      *
-     * @var int
-     */
-    private $maxSize = 32000000;
-
-    /**
-     * original folder
-     *
-     * @var string
-     */
-    private $originalFolder = 'original/';
-
-    /**
-     * thumbnail folder
-     *
-     * @var string
-     */
-    private $thumbnailFolder = 'thumbnail/';
-
-    /**
      * @var array
      */
     private $documentExtensions = ['pdf', 'doc', 'docx', 'ppt'];
 
     /**
+     * valid image extensions
+     *
      * @var array
      */
-    private $pictureExtensions = ['jpg', 'gif', 'png'];
+    private $imageExtensions = ['jpg', 'gif', 'png'];
 
     /**
-     * acceptable document mime types
+     * valid video extensions
+     *
+     * @var array
+     */
+    private $videoExtensions = ['avi', 'mov', 'mp4', 'ogg'];
+
+    /**
+     * valid audio extensions
+     *
+     * @var array
+     */
+    private $audioExtensions = ['mp3', 'wav'];
+
+    /**
+     * valid document mime types
      *
      * @var array
      */
@@ -54,11 +51,11 @@ class Uploader implements UploaderInterface
     ];
 
     /**
-     * acceptable picture mime types
+     * valid image mime types
      *
      * @var array
      */
-    private $pictureMimeTypes = [
+    private $imageMimeTypes = [
         'image/gif',
         'image/jpeg',
         'image/png',
@@ -81,73 +78,58 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * upload picture
-     *
-     * function only returns false if upload fails, not if optimization and thumbnails fail
+     * upload image
      *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
-     * @param int                                                 $newId
-     * @return bool
+     * @param string                                              $name
+     * @param bool                                                $optimize
+     * @param bool                                                $thumbnail
+     * @return array
      * @throws \browner12\uploader\UploaderException
      */
-    public function picture(UploadedFile $file, $path, $newId)
+    public function image(UploadedFile $file, $path, $name, $optimize = true, $thumbnail = true)
     {
-        //check size
-        $this->checkSize($file->getSize());
+        //upload file
+        $original = $this->upload($file, $path, $name, 'image');
 
-        //check extension
-        $this->checkExtension($file->getClientOriginalExtension(), 'picture');
+        //optimized
+        if ($original AND $optimize) {
 
-        //check mime type
-        $this->checkMimeType($file->getMimeType(), 'picture');
+            //create optimized image
+            $optimized = $this->createOptimized($path, $original['name']);
 
-        //new filename
-        $newFilename = $newId . '.' . $file->getClientOriginalExtension();
-
-        //successful upload
-        if ($file->move($path . $this->originalFolder, $newFilename)) {
-
-            //optimize
-            $this->createOptimized($path, $newFilename);
-
-            //thumbnail
-            $this->createThumbnail($path, $newFilename);
-
-            //return
-            $return = [
-                "id"            => $newId,
-                "name"          => $newFilename,
-                "size"          => null,
-                "url"           => $path . $newFilename,
-                "delete_url"    => null,
-                "delete_type"   => "DELETE",
-                'original_url'  => $path . $this->originalFolder . $newFilename,
-                'optimized_url' => $path . $newFilename,
-                'thumbnail_url' => $path . $this->thumbnailFolder . $newFilename,
-            ];
-
-            //return
-            return $return;
+            //append to return
+            $original['optimized_url'] = $optimized;
         }
 
-        //failed upload
-        throw new UploaderException('Could not upload picture.');
+        //thumbnail
+        if ($original AND $thumbnail) {
+
+            //create thumbnail image
+            $thumbnail = $this->createThumbnail($path, $original['name']);
+
+            //append to return
+            $original['thumbnail_url'] = $thumbnail;
+        }
+
+        //return
+        return $original;
     }
 
     /**
      * reprocess originals
      *
      * in this case we have original files, and want to recreate (or create for the first time) the optimized and thumbnail images
-     * could be used when transferring over to a new server.
-     * or could be used if the optimized or thumbnail methods change
+     * could be used when transferring over to a new server, or could be used if the optimized or thumbnail methods change
      *
      * @param string $path
+     * @return bool
      */
     public function reprocess($path)
     {
         //get all files from original folder
-        $files = new DirectoryIterator($path . $this->originalFolder);
+        $files = new DirectoryIterator($path . $this->getOriginalDirectory());
 
         //loop through original files
         foreach ($files as $file) {
@@ -168,7 +150,7 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * create optimized picture
+     * create optimized image
      *
      * we bring the quality down a bit, and make sure it's not bigger than 1000px wide
      * this is what we will serve to users
@@ -176,22 +158,52 @@ class Uploader implements UploaderInterface
      * @param string $path
      * @param string $filename
      */
-    private function createOptimized($path, $filename)
+    protected function createOptimized($path, $filename)
     {
-        $this->image->make($path . $this->originalFolder . $filename)->widen(1000, function ($constraint) {
-            $constraint->upsize();
-        })->save($path . $filename, 60);
+        $this->image->make($path . $this->getOriginalDirectory() . $filename)
+                    ->widen(config('uploader.optimized_maximum_width', 1000), function ($constraint) {
+                        $constraint->upsize();
+                    })
+                    ->save($path . $filename, config('uploader.optimized_image_quality', 60));
     }
 
     /**
-     * create thumbnail picture
+     * create thumbnail image
      *
      * @param string $path
      * @param string $filename
      */
-    private function createThumbnail($path, $filename)
+    protected function createThumbnail($path, $filename)
     {
-        $this->image->make($path . $this->originalFolder . $filename)->widen(100)->save($path . $this->thumbnailFolder . $filename);
+        $this->image->make($path . $this->getOriginalDirectory() . $filename)
+                    ->widen(config('uploader.thumbnail_width', 100))
+                    ->save($path . $this->getThumbnailDirectory() . $filename);
+    }
+
+    /**
+     * upload video
+     *
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     * @param string                                              $path
+     * @param string                                              $name
+     * @return array
+     */
+    public function video(UploadedFile $file, $path, $name)
+    {
+        return $this->upload($file, $path, $name, 'video');
+    }
+
+    /**
+     * upload audio file
+     *
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     * @param string                                              $path
+     * @param string                                              $name
+     * @return array
+     */
+    public function audio(UploadedFile $file, $path, $name)
+    {
+        return $this->upload($file, $path, $name, 'audio');
     }
 
     /**
@@ -199,31 +211,56 @@ class Uploader implements UploaderInterface
      *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
-     * @param int                                                 $newId
-     * @return bool
+     * @param string                                              $name
+     * @return array
      * @throws \browner12\uploader\UploaderException
      */
-    public function document(UploadedFile $file, $path, $newId)
+    public function document(UploadedFile $file, $path, $name)
     {
-        //check extension
-        $this->checkExtension($file->getClientOriginalExtension(), 'document');
+        return $this->upload($file, $path, $name, 'document');
+    }
 
-        //check mime type
-        $this->checkMimeType($file->getMimeType(), 'document');
-
+    /**
+     * upload file
+     *
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     * @param string                                              $path
+     * @param string                                              $name
+     * @param string                                              $type
+     * @return array
+     * @throws \browner12\uploader\UploaderException
+     */
+    protected function upload(UploadedFile $file, $path, $name, $type)
+    {
         //check file size
         $this->checkSize($file->getSize());
 
+        //check extension
+        $this->checkExtension($file->getClientOriginalExtension(), $type);
+
+        //check mime type
+        $this->checkMimeType($file->getMimeType(), $type);
+
         //set new filename
-        $newFilename = $newId . '.' . strtolower($file->getClientOriginalExtension());
+        $newFilename = $name . '.' . strtolower($file->getClientOriginalExtension());
 
         //successful upload
         if ($file->move($path, $newFilename)) {
-            return true;
+
+            //return
+            return [
+                'id'            => $name,
+                'name'          => $newFilename,
+                'size'          => $file->getClientSize(),
+                'mime_type'     => $file->getClientMimeType(),
+                'extension'     => $file->getClientOriginalExtension(),
+                'original_name' => $file->getClientOriginalName(),
+                'url'           => $path . $newFilename,
+            ];
         }
 
         //failed upload
-        throw new UploaderException('Could not upload document ' . $file->getClientOriginalName() . '.');
+        throw new UploaderException('Could not upload ' . $type . $file->getClientOriginalName() . '.');
     }
 
     /**
@@ -232,11 +269,11 @@ class Uploader implements UploaderInterface
      * @param int $size
      * @throws \browner12\uploader\UploaderException
      */
-    private function checkSize($size)
+    protected function checkSize($size)
     {
         //too big
-        if ($size > $this->maxSize) {
-            throw new UploaderException('File size is greater than maximum allowed size of ' . $this->maxSize . '.');
+        if ($size > $this->getMaximumUploadSize()) {
+            throw new UploaderException('File size is greater than maximum allowed size of ' . $this->getMaximumUploadSize() . '.');
         }
     }
 
@@ -247,24 +284,24 @@ class Uploader implements UploaderInterface
      * @param string $type
      * @throws \browner12\uploader\UploaderException
      */
-    private function checkExtension($extension, $type)
+    protected function checkExtension($extension, $type)
     {
         //determine haystack
         switch ($type) {
 
-            //picture
-            case 'picture':
-                $haystack = $this->pictureExtensions;
+            //image
+            case 'image':
+                $haystack = $this->getValidImageExtensions();
                 break;
 
             //document
             case 'document':
-                $haystack = $this->documentExtensions;
+                $haystack = $this->getValidDocumentExtensions();
                 break;
 
             //default
             default:
-                $haystack = $this->pictureExtensions;
+                $haystack = [];
                 break;
         }
 
@@ -281,24 +318,24 @@ class Uploader implements UploaderInterface
      * @param string $group
      * @throws \browner12\uploader\UploaderException
      */
-    private function checkMimeType($mimeType, $group)
+    protected function checkMimeType($mimeType, $group)
     {
         //determine haystack
         switch ($group) {
 
-            //picture
-            case 'picture':
-                $haystack = $this->pictureMimeTypes;
+            //image
+            case 'image':
+                $haystack = $this->getValidImageMimeTypes();
                 break;
 
             //document
             case 'document':
-                $haystack = $this->documentMimeTypes;
+                $haystack = $this->getValidDocumentMimeTypes();
                 break;
 
             //default
             default:
-                $haystack = $this->pictureMimeTypes;
+                $haystack = [];
                 break;
         }
 
@@ -306,5 +343,117 @@ class Uploader implements UploaderInterface
         if (!in_array(strtolower($mimeType), $haystack)) {
             throw new UploaderException('File does not have an approved type: ' . implode(', ', $haystack));
         }
+    }
+
+    /**
+     * get the path to upload the file to
+     *
+     * @param string $type
+     * @return string
+     * @throws \browner12\uploader\UploaderException
+     */
+    public function getPath($type)
+    {
+        $mapper = config('uploader.mapper', []);
+
+        if (isset($mapper[$type])) {
+            $path = $mapper[$type];
+        }
+
+        else {
+            throw new UploaderException('Cannot determine upload path for type ' . $type);
+        }
+
+        return $this->getBaseDirectory() . $path;
+    }
+
+    /**
+     * get the base directory
+     *
+     * @return string
+     */
+    protected function getBaseDirectory()
+    {
+        return config('uploader.base_directory', '/');
+    }
+
+    /**
+     * get the original directory
+     *
+     * @return string
+     */
+    protected function getOriginalDirectory()
+    {
+        return config('uploader.original_directory', 'original/');
+    }
+
+    /**
+     * get the optimized directory
+     *
+     * @return string
+     */
+    protected function getOptimizedDirectory()
+    {
+        return config('uploader.optimized_directory', '/');
+    }
+
+    /**
+     * get the thumbnail directory
+     *
+     * @return string
+     */
+    protected function getThumbnailDirectory()
+    {
+        return config('uploader.thumbnail_directory', 'thumbnail/');
+    }
+
+    /**
+     * get the valid document extensions
+     *
+     * @return array
+     */
+    protected function getValidDocumentExtensions()
+    {
+        return config('uploader.document_extensions', $this->documentExtensions);
+    }
+
+    /**
+     * get the valid image extensions
+     *
+     * @return array
+     */
+    protected function getValidImageExtensions()
+    {
+        return config('uploader.image_extensions', $this->imageExtensions);
+    }
+
+    /**
+     * get the valid document mime types
+     *
+     * @return array
+     */
+    protected function getValidDocumentMimeTypes()
+    {
+        return config('uploader.document_mime_types', $this->documentMimeTypes);
+    }
+
+    /**
+     * get the valid image mime types
+     *
+     * @return array
+     */
+    protected function getValidImageMimeTypes()
+    {
+        return config('uploader.image_mime_types', $this->imageMimeTypes);
+    }
+
+    /**
+     * get the maximum file upload size
+     *
+     * @return int
+     */
+    protected function getMaximumUploadSize()
+    {
+        return config('uploader.maximum_upload_size', 32000000);
     }
 }
