@@ -69,6 +69,8 @@ $uploader->video($file, $path, $filename);
 $uploader->audio($file, $path, $filename);
 ```
 
+One important thing to note is that `$file` must be an instance of `\Symfony\Component\HttpFoundation\File\UploadedFile`. If you are using Laravel, all files will be passed as this automatically.
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.
