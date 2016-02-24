@@ -43,6 +43,8 @@ php artisan vendor:publish --provider="browner12\uploader\UploaderServiceProvide
 
 ## Configuration
 
+Setting up your new `uploader.php` configuration file is very important to the uploader behaving as you expect. 
+
 ## Usage
 
 Start by manually instantiating the uploader
@@ -54,7 +56,7 @@ $uploader = new Uploader();
 or using dependency injection.
 
 ``` php
-public function __construct(Uploader $uploader)
+public function __construct(UploaderInterface $uploader)
 {
     $this->uploader = $uploader;
 }
@@ -63,10 +65,10 @@ public function __construct(Uploader $uploader)
 There are four main methods with the uploader, each for uploading a different type of file.
 
 ``` php
-$uploader->document($file, $path, $filename);
-$uploader->picture($file, $path, $filename);
-$uploader->video($file, $path, $filename);
-$uploader->audio($file, $path, $filename);
+$this->uploader->document($file, $path, $filename);
+$this->uploader->image($file, $path, $filename);
+$this->uploader->video($file, $path, $filename);
+$this->uploader->audio($file, $path, $filename);
 ```
 
 One important thing to note is that `$file` must be an instance of `\Symfony\Component\HttpFoundation\File\UploadedFile`. If you are using Laravel, all files will be passed as this automatically.
