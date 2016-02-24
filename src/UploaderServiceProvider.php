@@ -5,7 +5,9 @@ use Illuminate\Support\ServiceProvider;
 class UploaderServiceProvider extends ServiceProvider
 {
     /**
-     * register
+     * register the service provider
+     *
+     * @return void
      */
     public function register()
     {
@@ -13,10 +15,13 @@ class UploaderServiceProvider extends ServiceProvider
     }
 
     /**
-     * boot
+     * boot the service provider
+     *
+     * @return void
      */
     public function boot()
     {
+        //publish config
         $this->publishes([
             __DIR__.'/config/uploader.php' => config_path('uploader.php'),
         ]);
