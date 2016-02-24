@@ -1,4 +1,4 @@
-# uploader
+# Uploader
 
 [![Latest Version on Packagist][ico-version]][link-packagist]
 [![Software License][ico-license]](LICENSE.md)
@@ -27,6 +27,22 @@ Add the service provider to the providers array in  `config/app.php`.
 ];
 ```
 
+## Publishing
+
+You can publish everything at once
+
+``` php
+php artisan vendor:publish --provider="browner12\uploader\UploaderServiceProvider"
+```
+
+or you can publish groups individually.
+
+``` php
+php artisan vendor:publish --provider="browner12\uploader\UploaderServiceProvider" --tag="config"
+```
+
+## Configuration
+
 ## Usage
 
 Start by manually instantiating the uploader
@@ -44,16 +60,13 @@ public function __construct(Uploader $uploader)
 }
 ```
 
-There are two main methods with the uploader. One is for uploading images
-
-``` php
-$uploader->picture($file, $path, $filename);
-```
-
-and the other is for uploading documents.
+There are four main methods with the uploader, each for uploading a different type of file.
 
 ``` php
 $uploader->document($file, $path, $filename);
+$uploader->picture($file, $path, $filename);
+$uploader->video($file, $path, $filename);
+$uploader->audio($file, $path, $filename);
 ```
 
 ## Change log
