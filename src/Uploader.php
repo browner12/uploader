@@ -14,52 +14,63 @@ class Uploader implements UploaderInterface
      *
      * @var array
      */
-    private $documentExtensions = ['pdf', 'doc', 'docx', 'ppt'];
+    private $documentExtensions = [];
 
     /**
      * valid image extensions
      *
      * @var array
      */
-    private $imageExtensions = ['jpg', 'gif', 'png'];
+    private $imageExtensions = [];
 
     /**
      * valid video extensions
      *
      * @var array
      */
-    private $videoExtensions = ['avi', 'mov', 'mp4', 'ogg'];
+    private $videoExtensions = [];
 
     /**
      * valid audio extensions
      *
      * @var array
      */
-    private $audioExtensions = ['mp3', 'wav'];
+    private $audioExtensions = [];
 
     /**
      * valid document mime types
      *
      * @var array
      */
-    private $documentMimeTypes = [
-        'application/pdf',
-        'application/msword',
-        'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'application/vnd.ms-powerpoint',
-        'application/vnd.openxmlformats-officedocument.presentationml.presentation',
-    ];
+    private $documentMimeTypes = [];
 
     /**
      * valid image mime types
      *
      * @var array
      */
-    private $imageMimeTypes = [
-        'image/gif',
-        'image/jpeg',
-        'image/png',
-    ];
+    private $imageMimeTypes = [];
+
+    /**
+     * valid video mime types
+     *
+     * @var array
+     */
+    private $videoMimeTypes = [];
+
+    /**
+     * valid audio mime types
+     *
+     * @var array
+     */
+    private $audioMimeTypes = [];
+
+    /**
+     * maximum file upload size
+     *
+     * @var int
+     */
+    private $maximumUploadSize;
 
     /**
      * @var \Intervention\Image\ImageManager
@@ -75,6 +86,21 @@ class Uploader implements UploaderInterface
     {
         //assign
         $this->image = $image;
+
+        //set valid extensions
+        $this->setValidExtensions('document', config('uploader.document_extensions', []));
+        $this->setValidExtensions('image', config('uploader.image_extensions', []));
+        $this->setValidExtensions('video', config('uploader.video_extensions', []));
+        $this->setValidExtensions('audio', config('uploader.audio_extensions', []));
+
+        //set valid mime types
+        $this->setValidMimeTypes('document', config('uploader.document_mime_types', []));
+        $this->setValidMimeTypes('image', config('uploader.image_mime_types', []));
+        $this->setValidMimeTypes('video', config('uploader.video_mime_types', []));
+        $this->setValidMimeTypes('audio', config('uploader.audio_mime_types', []));
+
+        //set maximum file size
+        $this->setMaximumUploadSize(config('uploader.maximum_upload_size', 32000000));
     }
 
     /**
@@ -188,7 +214,7 @@ class Uploader implements UploaderInterface
      * @param string                                              $name
      * @return array
      */
-    public function video(UploadedFile $file, $path, $name)
+    public function video(UploadedFile $file, $path, $name = null)
     {
         return $this->upload($file, $path, $name, 'video');
     }
@@ -201,7 +227,7 @@ class Uploader implements UploaderInterface
      * @param string                                              $name
      * @return array
      */
-    public function audio(UploadedFile $file, $path, $name)
+    public function audio(UploadedFile $file, $path, $name = null)
     {
         return $this->upload($file, $path, $name, 'audio');
     }
@@ -215,7 +241,7 @@ class Uploader implements UploaderInterface
      * @return array
      * @throws \browner12\uploader\UploaderException
      */
-    public function document(UploadedFile $file, $path, $name)
+    public function document(UploadedFile $file, $path, $name = null)
     {
         return $this->upload($file, $path, $name, 'document');
     }
@@ -230,7 +256,7 @@ class Uploader implements UploaderInterface
      * @return array
      * @throws \browner12\uploader\UploaderException
      */
-    protected function upload(UploadedFile $file, $path, $name, $type)
+    protected function upload(UploadedFile $file, $path, $name = null, $type)
     {
         //check file size
         $this->checkSize($file->getSize());
@@ -241,7 +267,10 @@ class Uploader implements UploaderInterface
         //check mime type
         $this->checkMimeType($file->getMimeType(), $type);
 
-        //set new filename
+        //if a name is not passed, we will use the original file name
+        $name = ($name) ?: $file->getClientOriginalName();
+
+        //determine filename
         $newFilename = $name . '.' . strtolower($file->getClientOriginalExtension());
 
         //successful upload
@@ -287,23 +316,7 @@ class Uploader implements UploaderInterface
     protected function checkExtension($extension, $type)
     {
         //determine haystack
-        switch ($type) {
-
-            //image
-            case 'image':
-                $haystack = $this->getValidImageExtensions();
-                break;
-
-            //document
-            case 'document':
-                $haystack = $this->getValidDocumentExtensions();
-                break;
-
-            //default
-            default:
-                $haystack = [];
-                break;
-        }
+        $haystack = $this->getValidExtensions($type);
 
         //not approved
         if (!in_array(strtolower($extension), $haystack)) {
@@ -315,29 +328,13 @@ class Uploader implements UploaderInterface
      * check mime type
      *
      * @param string $mimeType
-     * @param string $group
+     * @param string $type
      * @throws \browner12\uploader\UploaderException
      */
-    protected function checkMimeType($mimeType, $group)
+    protected function checkMimeType($mimeType, $type)
     {
         //determine haystack
-        switch ($group) {
-
-            //image
-            case 'image':
-                $haystack = $this->getValidImageMimeTypes();
-                break;
-
-            //document
-            case 'document':
-                $haystack = $this->getValidDocumentMimeTypes();
-                break;
-
-            //default
-            default:
-                $haystack = [];
-                break;
-        }
+        $haystack = $this->getValidMimeTypes($type);
 
         //not approved
         if (!in_array(strtolower($mimeType), $haystack)) {
@@ -408,52 +405,174 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * get the valid document extensions
+     * get valid extensions
      *
+     * @param string $type
      * @return array
      */
-    protected function getValidDocumentExtensions()
+    protected function getValidExtensions($type)
     {
-        return config('uploader.document_extensions', $this->documentExtensions);
+        switch ($type) {
+
+            //document
+            case 'document':
+                $extensions = $this->documentExtensions;
+                break;
+
+            //image
+            case 'image':
+                $extensions = $this->imageExtensions;
+                break;
+
+            //video
+            case 'video':
+                $extensions = $this->videoExtensions;
+                break;
+
+            //audio
+            case 'audio':
+                $extensions = $this->audioExtensions;
+                break;
+
+            //default
+            default:
+                $extensions = [];
+                break;
+        }
+
+        //return
+        return $extensions;
     }
 
     /**
-     * get the valid image extensions
+     * set valid extensions
      *
-     * @return array
+     * @param string $type
+     * @param array  $extensions
      */
-    protected function getValidImageExtensions()
+    public function setValidExtensions($type, array $extensions)
     {
-        return config('uploader.image_extensions', $this->imageExtensions);
+        switch ($type) {
+
+            //document
+            case 'document':
+                $this->documentExtensions = $extensions;
+                break;
+
+            //image
+            case 'image':
+                $this->imageExtensions = $extensions;
+                break;
+
+            //video
+            case 'video':
+                $this->videoExtensions = $extensions;
+                break;
+
+            //audio
+            case 'audio':
+                $this->audioExtensions = $extensions;
+                break;
+
+            //default
+            default:
+                break;
+        }
     }
 
     /**
-     * get the valid document mime types
+     * get valid mime types
      *
+     * @param string $type
      * @return array
      */
-    protected function getValidDocumentMimeTypes()
+    protected function getValidMimeTypes($type)
     {
-        return config('uploader.document_mime_types', $this->documentMimeTypes);
+        switch ($type) {
+
+            //document
+            case 'document':
+                $mimeTypes = $this->documentMimeTypes;
+                break;
+
+            //image
+            case 'image':
+                $mimeTypes = $this->imageMimeTypes;
+                break;
+
+            //video
+            case 'video':
+                $mimeTypes = $this->videoMimeTypes;
+                break;
+
+            //audio
+            case 'audio':
+                $mimeTypes = $this->audioMimeTypes;
+                break;
+
+            //default
+            default:
+                $mimeTypes = [];
+                break;
+        }
+
+        //return
+        return $mimeTypes;
     }
 
     /**
-     * get the valid image mime types
+     * set valid mime types
      *
-     * @return array
+     * @param string $type
+     * @param array  $mimeTypes
      */
-    protected function getValidImageMimeTypes()
+    public function setValidMimeTypes($type, array $mimeTypes)
     {
-        return config('uploader.image_mime_types', $this->imageMimeTypes);
+        switch ($type) {
+
+            //document
+            case 'document':
+                $this->documentMimeTypes = $mimeTypes;
+                break;
+
+            //image
+            case 'image':
+                $this->imageMimeTypes = $mimeTypes;
+                break;
+
+            //video
+            case 'video':
+                $this->videoMimeTypes = $mimeTypes;
+                break;
+
+            //audio
+            case 'audio':
+                $this->audioMimeTypes = $mimeTypes;
+                break;
+
+            //default
+            default:
+                break;
+        }
     }
 
     /**
-     * get the maximum file upload size
+     * get maximum file upload size
      *
      * @return int
      */
     protected function getMaximumUploadSize()
     {
         return config('uploader.maximum_upload_size', 32000000);
+    }
+
+    /**
+     * set maximum file upload size
+     *
+     * @param int $size
+     */
+    public function setMaximumUploadSize($size)
+    {
+        $this->maximumUploadSize = $size;
     }
 }
