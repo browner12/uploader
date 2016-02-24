@@ -563,7 +563,7 @@ class Uploader implements UploaderInterface
      */
     protected function getMaximumUploadSize()
     {
-        return config('uploader.maximum_upload_size', 32000000);
+        return $this->maximumUploadSize;
     }
 
     /**
