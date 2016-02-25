@@ -375,17 +375,17 @@ class Uploader implements UploaderInterface
 
             //original
             case 'original':
-                $path = $this->getOriginalDirectory() . $path;
+                $path .= $this->getOriginalDirectory();
                 break;
 
             //optimized
             case 'optimized':
-                $path = $this->getOptimizedDirectory() . $path;
+                $path .= $this->getOptimizedDirectory();
                 break;
 
             //thumbnail
             case 'thumbnail':
-                $path = $this->getThumbnailDirectory() . $path;
+                $path .= $this->getThumbnailDirectory();
                 break;
 
             //default
