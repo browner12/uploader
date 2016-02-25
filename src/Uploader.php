@@ -412,7 +412,7 @@ class Uploader implements UploaderInterface
 
         //remove trailing slashes and add one back
         if ($baseDirectory != '') {
-            $baseDirectory = rtrim($baseDirectory, '/');
+            $baseDirectory = rtrim($baseDirectory, '/') . '/';
         }
 
         //return
@@ -434,7 +434,7 @@ class Uploader implements UploaderInterface
 
         //remove trailing slashes and add one back
         if ($originalDirectory != '') {
-            $originalDirectory = rtrim($originalDirectory, '/');
+            $originalDirectory = rtrim($originalDirectory, '/') . '/';
         }
 
         //return
@@ -456,7 +456,7 @@ class Uploader implements UploaderInterface
 
         //remove trailing slashes and add one back
         if ($optimizedDirectory != '') {
-            $optimizedDirectory = rtrim($optimizedDirectory, '/');
+            $optimizedDirectory = rtrim($optimizedDirectory, '/') . '/';
         }
 
         //return
@@ -478,7 +478,7 @@ class Uploader implements UploaderInterface
 
         //remove trailing slashes and add one back
         if ($thumbnailDirectory != '') {
-            $thumbnailDirectory = rtrim($thumbnailDirectory, '/');
+            $thumbnailDirectory = rtrim($thumbnailDirectory, '/') . '/';
         }
 
         //return
