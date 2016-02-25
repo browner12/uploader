@@ -114,10 +114,13 @@ class Uploader implements UploaderInterface
      * @return array
      * @throws \browner12\uploader\UploaderException
      */
-    public function image(UploadedFile $file, $path, $name, $optimize = true, $thumbnail = true)
+    public function image(UploadedFile $file, $path, $name = null, $optimize = true, $thumbnail = true)
     {
+        //determine original path
+        $originalPath = $this->getPath($path, 'original');
+
         //upload file
-        $original = $this->upload($file, $path, $name, 'image');
+        $original = $this->upload($file, $originalPath, $name, 'image');
 
         //optimized
         if ($original AND $optimize) {
@@ -183,14 +186,18 @@ class Uploader implements UploaderInterface
      *
      * @param string $path
      * @param string $filename
+     * @return array
      */
     protected function createOptimized($path, $filename)
     {
-        $this->image->make($path . $this->getOriginalDirectory() . $filename)
+        $this->image->make($this->getPath($path, 'original') . $filename)
                     ->widen(config('uploader.optimized_maximum_width', 1000), function ($constraint) {
                         $constraint->upsize();
                     })
-                    ->save($path . $filename, config('uploader.optimized_image_quality', 60));
+                    ->save($this->getPath($path, 'optimized') . $filename, config('uploader.optimized_image_quality', 60));
+
+        //return
+        return ['optimized_url' => $this->getPath($path, 'optimized')];
     }
 
     /**
@@ -198,12 +205,16 @@ class Uploader implements UploaderInterface
      *
      * @param string $path
      * @param string $filename
+     * @return array
      */
     protected function createThumbnail($path, $filename)
     {
-        $this->image->make($path . $this->getOriginalDirectory() . $filename)
+        $this->image->make($this->getPath($path, 'original') . $filename)
                     ->widen(config('uploader.thumbnail_width', 100))
-                    ->save($path . $this->getThumbnailDirectory() . $filename);
+                    ->save($this->getPath($path, 'thumbnail') . $filename);
+
+        //
+        return ['thumbnail_url' => $this->getPath($path, 'thumbnail')];
     }
 
     /**
@@ -345,20 +356,42 @@ class Uploader implements UploaderInterface
     /**
      * get the path to upload the file to
      *
+     * @param string $path
      * @param string $type
      * @return string
-     * @throws \browner12\uploader\UploaderException
      */
-    public function getPath($type)
+    public function getPath($path, $type = null)
     {
-        $mapper = config('uploader.mapper', []);
+        //remove leading slashes
+        $path = ltrim($path, '/');
 
-        if (isset($mapper[$type])) {
-            $path = $mapper[$type];
+        //remove trailing slashes and add one back
+        if ($path != '') {
+            $path = rtrim($path, '/');
         }
 
-        else {
-            throw new UploaderException('Cannot determine upload path for type ' . $type);
+        //adjust for type
+        switch($type){
+
+            //original
+            case 'original':
+                $path = $this->getOriginalDirectory() . $path;
+                break;
+
+            //optimized
+            case 'optimized':
+                $path = $this->getOptimizedDirectory() . $path;
+                break;
+
+            //thumbnail
+            case 'thumbnail':
+                $path = $this->getThumbnailDirectory() . $path;
+                break;
+
+            //default
+            default:
+                break;
+
         }
 
         return $this->getBaseDirectory() . $path;
@@ -371,7 +404,19 @@ class Uploader implements UploaderInterface
      */
     protected function getBaseDirectory()
     {
-        return config('uploader.base_directory', '/');
+        //get user defined base directory
+        $baseDirectory = config('uploader.base_directory', '');
+
+        //remove leading slashes
+        $baseDirectory = ltrim($baseDirectory, '/');
+
+        //remove trailing slashes and add one back
+        if ($baseDirectory != '') {
+            $baseDirectory = rtrim($baseDirectory, '/');
+        }
+
+        //return
+        return $baseDirectory;
     }
 
     /**
@@ -381,7 +426,19 @@ class Uploader implements UploaderInterface
      */
     protected function getOriginalDirectory()
     {
-        return config('uploader.original_directory', 'original/');
+        //get user defined original directory
+        $originalDirectory = config('uploader.original_directory', 'original');
+
+        //remove leading slashes
+        $originalDirectory = ltrim($originalDirectory, '/');
+
+        //remove trailing slashes and add one back
+        if ($originalDirectory != '') {
+            $originalDirectory = rtrim($originalDirectory, '/');
+        }
+
+        //return
+        return $originalDirectory;
     }
 
     /**
@@ -391,7 +448,19 @@ class Uploader implements UploaderInterface
      */
     protected function getOptimizedDirectory()
     {
-        return config('uploader.optimized_directory', '/');
+        //get user defined optimized directory
+        $optimizedDirectory = config('uploader.optimized_directory', '');
+
+        //remove leading slashes
+        $optimizedDirectory = ltrim($optimizedDirectory, '/');
+
+        //remove trailing slashes and add one back
+        if ($optimizedDirectory != '') {
+            $optimizedDirectory = rtrim($optimizedDirectory, '/');
+        }
+
+        //return
+        return $optimizedDirectory;
     }
 
     /**
@@ -401,7 +470,19 @@ class Uploader implements UploaderInterface
      */
     protected function getThumbnailDirectory()
     {
-        return config('uploader.thumbnail_directory', 'thumbnail/');
+        //get user defined thumbnail directory
+        $thumbnailDirectory = config('uploader.thumbnail_directory', 'thumbnail');
+
+        //remove leading slashes
+        $thumbnailDirectory = ltrim($thumbnailDirectory, '/');
+
+        //remove trailing slashes and add one back
+        if ($thumbnailDirectory != '') {
+            $thumbnailDirectory = rtrim($thumbnailDirectory, '/');
+        }
+
+        //return
+        return $thumbnailDirectory;
     }
 
     /**
