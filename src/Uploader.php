@@ -70,7 +70,28 @@ class Uploader implements UploaderInterface
      *
      * @var int
      */
-    private $maximumUploadSize;
+    private $maximumUploadSize = 32000000;
+
+    /**
+     * optimized image quality
+     *
+     * @var int
+     */
+    private $optimizedImageQuality = 80;
+
+    /**
+     * optimized maximum width
+     *
+     * @var int
+     */
+    private $optimizedMaximumWidth = 1000;
+
+    /**
+     * thumbnail width
+     *
+     * @var int
+     */
+    private $thumbnailWidth = 100;
 
     /**
      * @var \Intervention\Image\ImageManager
@@ -99,8 +120,11 @@ class Uploader implements UploaderInterface
         $this->setValidMimeTypes('video', config('uploader.video_mime_types', []));
         $this->setValidMimeTypes('audio', config('uploader.audio_mime_types', []));
 
-        //set maximum file size
+        //set more config
         $this->setMaximumUploadSize(config('uploader.maximum_upload_size', 32000000));
+        $this->setOptimizedImageQuality(config('uploader.optimized_image_quality', 80));
+        $this->setOptimizedMaximumWidth(config('uploader.optimized_maximum_width', 1000));
+        $this->setThumbnailWidth(config('uploader.optimized_width', 100));
     }
 
     /**
@@ -241,7 +265,7 @@ class Uploader implements UploaderInterface
      */
     public function video(UploadedFile $file, $path, $name = null)
     {
-        return $this->upload($file, $path, $name, 'video');
+        return $this->upload($file, $this->getPath($path), $name, 'video');
     }
 
     /**
@@ -254,7 +278,7 @@ class Uploader implements UploaderInterface
      */
     public function audio(UploadedFile $file, $path, $name = null)
     {
-        return $this->upload($file, $path, $name, 'audio');
+        return $this->upload($file, $this->getPath($path), $name, 'audio');
     }
 
     /**
@@ -268,7 +292,7 @@ class Uploader implements UploaderInterface
      */
     public function document(UploadedFile $file, $path, $name = null)
     {
-        return $this->upload($file, $path, $name, 'document');
+        return $this->upload($file, $this->getPath($path), $name, 'document');
     }
 
     /**
@@ -326,8 +350,8 @@ class Uploader implements UploaderInterface
     protected function checkSize($size)
     {
         //too big
-        if ($size > $this->getMaximumUploadSize()) {
-            throw new UploaderException('File size is greater than maximum allowed size of ' . $this->formatBytes($this->getMaximumUploadSize()));
+        if ($size > $this->maximumUploadSize) {
+            throw new UploaderException('File size is greater than maximum allowed size of ' . $this->formatBytes($this->maximumUploadSize));
         }
     }
 
@@ -669,16 +693,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * get maximum file upload size
-     *
-     * @return int
-     */
-    protected function getMaximumUploadSize()
-    {
-        return $this->maximumUploadSize;
-    }
-
-    /**
      * set maximum file upload size
      *
      * @param int $size
@@ -689,12 +703,48 @@ class Uploader implements UploaderInterface
     }
 
     /**
+     * set optimized image quality
+     *
+     * @param int $quality
+     */
+    public function setOptimizedImageQuality($quality)
+    {
+        if($quality > 0 AND $quality <= 100){
+            $this->optimizedImageQuality = $quality;
+        }
+    }
+
+    /**
+     * set optimized maximum width
+     *
+     * @param int $width
+     */
+    public function setOptimizedMaximumWidth($width)
+    {
+        if(is_int($width)){
+            $this->optimizedMaximumWidth = $width;
+        }
+    }
+
+    /**
+     * set thumbnail width
+     *
+     * @param int $width
+     */
+    public function setThumbnailWidth($width)
+    {
+        if(is_int($width)){
+            $this->thumbnailWidth = $width;
+        }
+    }
+
+    /**
      * format the bytes to a human readable form
      *
      * @param int $bytes
      * @return string
      */
-    public function formatBytes($bytes)
+    protected function formatBytes($bytes)
     {
         if ($bytes >= 1073741824) {
             $bytes = number_format($bytes / 1073741824, 2) . ' GB';
