@@ -24,6 +24,6 @@ class UploaderServiceProvider extends ServiceProvider
         //publish config
         $this->publishes([
             __DIR__.'/config/uploader.php' => config_path('uploader.php'),
-        ]);
+        ], 'config');
     }
 }
