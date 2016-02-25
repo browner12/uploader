@@ -367,7 +367,7 @@ class Uploader implements UploaderInterface
 
         //remove trailing slashes and add one back
         if ($path != '') {
-            $path = rtrim($path, '/');
+            $path = rtrim($path, '/') . '/';
         }
 
         //adjust for type
