@@ -169,7 +169,7 @@ return [
     | Maximum Upload Size
     |--------------------------------------------------------------------------
     |
-    | Set the default maximum upload size (in kilobytes).
+    | Set the default maximum upload size in bytes
     |
     */
 
