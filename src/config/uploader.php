@@ -160,6 +160,7 @@ return [
     */
 
     'audio_mime_types' => [
+        'audio/mpeg',
         'audio/mpeg3',
         'audio/wav',
     ],
