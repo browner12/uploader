@@ -129,7 +129,7 @@ class Uploader implements UploaderInterface
             $optimized = $this->createOptimized($path, $original['name']);
 
             //append to return
-            $original['optimized_url'] = $optimized;
+            $original = array_merge($original, $optimized);
         }
 
         //thumbnail
@@ -139,7 +139,7 @@ class Uploader implements UploaderInterface
             $thumbnail = $this->createThumbnail($path, $original['name']);
 
             //append to return
-            $original['thumbnail_url'] = $thumbnail;
+            $original = array_merge($original, $thumbnail);
         }
 
         //return
@@ -327,7 +327,7 @@ class Uploader implements UploaderInterface
     {
         //too big
         if ($size > $this->getMaximumUploadSize()) {
-            throw new UploaderException('File size is greater than maximum allowed size of ' . $this->getMaximumUploadSize() . '.');
+            throw new UploaderException('File size is greater than maximum allowed size of ' . $this->formatBytes($this->getMaximumUploadSize()));
         }
     }
 
@@ -376,7 +376,7 @@ class Uploader implements UploaderInterface
     protected function createDirectory($directory)
     {
         //directory does not exist yet
-        if(!is_dir($directory)){
+        if (!is_dir($directory)) {
             mkdir($directory);
             return true;
         }
@@ -403,7 +403,7 @@ class Uploader implements UploaderInterface
         }
 
         //adjust for type
-        switch($type){
+        switch ($type) {
 
             //original
             case 'original':
@@ -423,7 +423,6 @@ class Uploader implements UploaderInterface
             //default
             default:
                 break;
-
         }
 
         return $this->getBaseDirectory() . $path;
@@ -687,5 +686,35 @@ class Uploader implements UploaderInterface
     public function setMaximumUploadSize($size)
     {
         $this->maximumUploadSize = $size;
+    }
+
+    /**
+     * format the bytes to a human readable form
+     *
+     * @param int $bytes
+     * @return string
+     */
+    public function formatBytes($bytes)
+    {
+        if ($bytes >= 1073741824) {
+            $bytes = number_format($bytes / 1073741824, 2) . ' GB';
+        }
+        elseif ($bytes >= 1048576) {
+            $bytes = number_format($bytes / 1048576, 2) . ' MB';
+        }
+        elseif ($bytes >= 1024) {
+            $bytes = number_format($bytes / 1024, 2) . ' KB';
+        }
+        elseif ($bytes > 1) {
+            $bytes = $bytes . ' bytes';
+        }
+        elseif ($bytes == 1) {
+            $bytes = $bytes . ' byte';
+        }
+        else {
+            $bytes = '0 bytes';
+        }
+
+        return $bytes;
     }
 }
