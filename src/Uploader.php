@@ -190,14 +190,21 @@ class Uploader implements UploaderInterface
      */
     protected function createOptimized($path, $filename)
     {
+        //determine optimized directory
+        $optimizedPath = $this->getPath($path, 'optimized');
+
+        //create directory
+        $this->createDirectory($optimizedPath);
+
+        //create optimized image
         $this->image->make($this->getPath($path, 'original') . $filename)
                     ->widen(config('uploader.optimized_maximum_width', 1000), function ($constraint) {
                         $constraint->upsize();
                     })
-                    ->save($this->getPath($path, 'optimized') . $filename, config('uploader.optimized_image_quality', 60));
+                    ->save($optimizedPath . $filename, config('uploader.optimized_image_quality', 60));
 
         //return
-        return ['optimized_url' => $this->getPath($path, 'optimized')];
+        return ['optimized_url' => $optimizedPath];
     }
 
     /**
@@ -209,12 +216,19 @@ class Uploader implements UploaderInterface
      */
     protected function createThumbnail($path, $filename)
     {
+        //determine thumbnail directory
+        $thumbnailPath = $this->getPath($path, 'thumbnail');
+
+        //create directory
+        $this->createDirectory($thumbnailPath);
+
+        //create thumbnail image
         $this->image->make($this->getPath($path, 'original') . $filename)
                     ->widen(config('uploader.thumbnail_width', 100))
-                    ->save($this->getPath($path, 'thumbnail') . $filename);
+                    ->save($thumbnailPath . $filename);
 
         //
-        return ['thumbnail_url' => $this->getPath($path, 'thumbnail')];
+        return ['thumbnail_url' => $thumbnailPath];
     }
 
     /**
@@ -351,6 +365,24 @@ class Uploader implements UploaderInterface
         if (!in_array(strtolower($mimeType), $haystack)) {
             throw new UploaderException('File does not have an approved type: ' . implode(', ', $haystack));
         }
+    }
+
+    /**
+     * create a directory
+     *
+     * @param $directory
+     * @return bool
+     */
+    protected function createDirectory($directory)
+    {
+        //directory does not exist yet
+        if(!is_dir($directory)){
+            mkdir($directory);
+            return true;
+        }
+
+        //directory already existed
+        return false;
     }
 
     /**
