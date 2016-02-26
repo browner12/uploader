@@ -51,19 +51,6 @@ return [
 
     /*
     |--------------------------------------------------------------------------
-    | Directory Mapper
-    |--------------------------------------------------------------------------
-    |
-    | In order to provide consistency with the location of uploaded files,
-    | a mapper will define which path files will be uploaded to. These
-    | paths will be relative to your base_directory.
-    |
-    */
-
-    'mapper' => [],
-
-    /*
-    |--------------------------------------------------------------------------
     | Document Extensions
     |--------------------------------------------------------------------------
     |
