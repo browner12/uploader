@@ -125,7 +125,7 @@ $this->uploader->video($file, $path, $filename);
 $this->uploader->audio($file, $path, $filename);
 ```
 
-One important thing to note is that `$file` must be an instance of `\Symfony\Component\HttpFoundation\File\UploadedFile`. If you are using Laravel, all files will be passed as this automatically. The `$path` you pass will be relative to your `base_directory` defined in your configuration. If you omit the `$filename`, the original name of the file will be used. If you choose this option please be aware that files with the same name will be overwritten. Please also note that irregular file names may cause unexpected issues. We may choose to address this in a future version of the package.
+One important thing to note is that `$file` must be an instance of `\Symfony\Component\HttpFoundation\File\UploadedFile`. If you are using Laravel, all files will be passed as this object automatically. The `$path` you pass will be relative to your `base_directory` defined in your configuration. If you omit the `$filename`, the original name of the file will be used. If you choose this option please be aware that files with the same name will be overwritten. Please also note that irregular file names may cause unexpected issues. We may choose to address this in a future version of the package.
 
 Let's look at an example of how to best use the uploader inside of a Laravel controller.
 
@@ -174,9 +174,9 @@ While the majority of the time you will only need to use your default configurat
 
 ``` php
 $this->uploader->setDirectory('base', 'newBaseDirectory');
-$this->uploader->setDirectory('original', 'newOriginalDirectory);
+$this->uploader->setDirectory('original', 'newOriginalDirectory');
 $this->uploader->setDirectory('optimized', 'newOptimizedDirectory');
-$this->uploader->setDirectory('thumbnail', 'newThumbnailDirectory);
+$this->uploader->setDirectory('thumbnail', 'newThumbnailDirectory');
 
 $this->uploader->setCreateOptimized(false);
 $this->uploader->setCreateThumbnails(false);
