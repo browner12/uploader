@@ -248,7 +248,7 @@ class Uploader implements UploaderInterface
         $image->save($optimizedPath . $filename, $this->optimizedImageQuality);
 
         //return
-        return ['optimized_url' => $optimizedPath];
+        return ['optimized_url' => $optimizedPath . $filename];
     }
 
     /**
@@ -272,7 +272,7 @@ class Uploader implements UploaderInterface
                     ->save($thumbnailPath . $filename);
 
         //return
-        return ['thumbnail_url' => $thumbnailPath];
+        return ['thumbnail_url' => $thumbnailPath . $filename];
     }
 
     /**
