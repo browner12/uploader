@@ -140,7 +140,7 @@ class Uploader implements UploaderInterface
         $this->setMaximumUploadSize(config('uploader.maximum_upload_size', 32000000));
         $this->setOptimizedImageQuality(config('uploader.optimized_image_quality', 80));
         $this->setOptimizedMaximumWidth(config('uploader.optimized_maximum_width', 1000));
-        $this->setThumbnailWidth(config('uploader.optimized_width', 100));
+        $this->setThumbnailWidth(config('uploader.thumbnail_width', 100));
     }
 
     /**
