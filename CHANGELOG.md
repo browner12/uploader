@@ -6,7 +6,7 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## UNRELEASED
 
-## 1.0.0 - 2016-02-20
+## 1.0.0 - 2016-02-26
 
 ### Added
 - new uploader package
