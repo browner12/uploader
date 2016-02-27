@@ -10,93 +10,99 @@ use Symfony\Component\HttpFoundation\File\UploadedFile;
 class Uploader implements UploaderInterface
 {
     /**
-     * valid document extensions
-     *
-     * @var array
+     * @var string
      */
-    private $documentExtensions = [];
+    protected $baseDirectory = '';
 
     /**
-     * valid image extensions
-     *
-     * @var array
+     * @var string
      */
-    private $imageExtensions = [];
+    protected $originalDirectory = 'original';
 
     /**
-     * valid video extensions
-     *
-     * @var array
+     * @var string
      */
-    private $videoExtensions = [];
+    protected $optimizedDirectory = '';
 
     /**
-     * valid audio extensions
-     *
-     * @var array
+     * @var string
      */
-    private $audioExtensions = [];
+    protected $thumbnailDirectory = 'thumbnail';
 
     /**
-     * valid document mime types
-     *
-     * @var array
+     * @var bool
      */
-    private $documentMimeTypes = [];
+    protected $createOptimized = true;
 
     /**
-     * valid image mime types
-     *
-     * @var array
+     * @var bool
      */
-    private $imageMimeTypes = [];
+    protected $createThumbnails = true;
 
     /**
-     * valid video mime types
-     *
      * @var array
      */
-    private $videoMimeTypes = [];
+    protected $documentExtensions = [];
 
     /**
-     * valid audio mime types
-     *
      * @var array
      */
-    private $audioMimeTypes = [];
+    protected $imageExtensions = [];
 
     /**
-     * maximum file upload size
-     *
+     * @var array
+     */
+    protected $videoExtensions = [];
+
+    /**
+     * @var array
+     */
+    protected $audioExtensions = [];
+
+    /**
+     * @var array
+     */
+    protected $documentMimeTypes = [];
+
+    /**
+     * @var array
+     */
+    protected $imageMimeTypes = [];
+
+    /**
+     * @var array
+     */
+    protected $videoMimeTypes = [];
+
+    /**
+     * @var array
+     */
+    protected $audioMimeTypes = [];
+
+    /**
      * @var int
      */
-    private $maximumUploadSize = 32000000;
+    protected $maximumUploadSize = 32000000;
 
     /**
-     * optimized image quality
-     *
      * @var int
      */
-    private $optimizedImageQuality = 80;
+    protected $optimizedImageQuality = 80;
 
     /**
-     * optimized maximum width
-     *
      * @var int
      */
-    private $optimizedMaximumWidth = 1000;
+    protected $optimizedMaximumWidth = 1000;
 
     /**
-     * thumbnail width
-     *
      * @var int
      */
-    private $thumbnailWidth = 100;
+    protected $thumbnailWidth = 100;
 
     /**
      * @var \Intervention\Image\ImageManager
      */
-    private $image;
+    protected $image;
 
     /**
      * constructor
@@ -107,6 +113,16 @@ class Uploader implements UploaderInterface
     {
         //assign
         $this->image = $image;
+
+        //set directories
+        $this->setDirectory('base', config('uploader.base_directory', ''));
+        $this->setDirectory('original', config('uploader.original_directory', 'original'));
+        $this->setDirectory('optimized', config('uploader.optimized_directory', ''));
+        $this->setDirectory('thumbnail', config('uploader.thumbnail_directory', 'thumbnail'));
+
+        //set create optimized and thumbnail
+        $this->setCreateOptimized(config('uploader.create_optimized', true));
+        $this->setCreateThumbnails(config('uploader.create_thumbnails', true));
 
         //set valid extensions
         $this->setValidExtensions('document', config('uploader.document_extensions', []));
@@ -133,12 +149,10 @@ class Uploader implements UploaderInterface
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
      * @param string                                              $name
-     * @param bool                                                $optimize
-     * @param bool                                                $thumbnail
      * @return array
      * @throws \browner12\uploader\UploaderException
      */
-    public function image(UploadedFile $file, $path, $name = null, $optimize = true, $thumbnail = true)
+    public function image(UploadedFile $file, $path, $name = null)
     {
         //determine original path
         $originalPath = $this->getPath($path, 'original');
@@ -147,7 +161,7 @@ class Uploader implements UploaderInterface
         $original = $this->upload($file, $originalPath, $name, 'image');
 
         //optimized
-        if ($original AND $optimize) {
+        if ($original AND $this->createOptimized) {
 
             //create optimized image
             $optimized = $this->createOptimized($path, $original['name']);
@@ -157,7 +171,7 @@ class Uploader implements UploaderInterface
         }
 
         //thumbnail
-        if ($original AND $thumbnail) {
+        if ($original AND $this->createThumbnails) {
 
             //create thumbnail image
             $thumbnail = $this->createThumbnail($path, $original['name']);
@@ -182,7 +196,7 @@ class Uploader implements UploaderInterface
     public function reprocess($path)
     {
         //get all files from original folder
-        $files = new DirectoryIterator($path . $this->getOriginalDirectory());
+        $files = new DirectoryIterator($path . $this->originalDirectory);
 
         //loop through original files
         foreach ($files as $file) {
@@ -221,11 +235,17 @@ class Uploader implements UploaderInterface
         $this->createDirectory($optimizedPath);
 
         //create optimized image
-        $this->image->make($this->getPath($path, 'original') . $filename)
-                    ->widen(config('uploader.optimized_maximum_width', 1000), function ($constraint) {
-                        $constraint->upsize();
-                    })
-                    ->save($optimizedPath . $filename, config('uploader.optimized_image_quality', 60));
+        $image = $this->image->make($this->getPath($path, 'original') . $filename);
+
+        //constrain optimized width
+        if ($this->optimizedMaximumWidth > 0) {
+            $image->widen($this->optimizedMaximumWidth, function ($constraint) {
+                $constraint->upsize();
+            });
+        }
+
+        //save image
+        $image->save($optimizedPath . $filename, $this->optimizedImageQuality);
 
         //return
         return ['optimized_url' => $optimizedPath];
@@ -248,10 +268,10 @@ class Uploader implements UploaderInterface
 
         //create thumbnail image
         $this->image->make($this->getPath($path, 'original') . $filename)
-                    ->widen(config('uploader.thumbnail_width', 100))
+                    ->widen($this->thumbnailWidth)
                     ->save($thumbnailPath . $filename);
 
-        //
+        //return
         return ['thumbnail_url' => $thumbnailPath];
     }
 
@@ -416,7 +436,7 @@ class Uploader implements UploaderInterface
      * @param string $type
      * @return string
      */
-    public function getPath($path, $type = null)
+    protected function getPath($path, $type = null)
     {
         //remove leading slashes
         $path = ltrim($path, '/');
@@ -431,17 +451,17 @@ class Uploader implements UploaderInterface
 
             //original
             case 'original':
-                $path .= $this->getOriginalDirectory();
+                $path .= $this->originalDirectory;
                 break;
 
             //optimized
             case 'optimized':
-                $path .= $this->getOptimizedDirectory();
+                $path .= $this->optimizedDirectory;
                 break;
 
             //thumbnail
             case 'thumbnail':
-                $path .= $this->getThumbnailDirectory();
+                $path .= $this->thumbnailDirectory;
                 break;
 
             //default
@@ -449,95 +469,76 @@ class Uploader implements UploaderInterface
                 break;
         }
 
-        return $this->getBaseDirectory() . $path;
+        return $this->baseDirectory . $path;
     }
 
     /**
-     * get the base directory
+     * set directory
      *
+     * @param string $type
+     * @param string $directory
      * @return string
      */
-    protected function getBaseDirectory()
+    public function setDirectory($type, $directory)
     {
-        //get user defined base directory
-        $baseDirectory = config('uploader.base_directory', '');
-
         //remove leading slashes
-        $baseDirectory = ltrim($baseDirectory, '/');
+        $directory = ltrim($directory, '/');
 
         //remove trailing slashes and add one back
-        if ($baseDirectory != '') {
-            $baseDirectory = rtrim($baseDirectory, '/') . '/';
+        if ($directory != '') {
+            $directory = rtrim($directory, '/') . '/';
+        }
+
+        //set directory
+        switch ($type) {
+
+            //base
+            case 'base':
+                $this->baseDirectory = $directory;
+                break;
+
+            //original
+            case 'original':
+                $this->originalDirectory = $directory;
+                break;
+
+            //optimized
+            case 'optimized':
+                $this->optimizedDirectory = $directory;
+                break;
+
+            //thumbnail
+            case 'thumbnail':
+                $this->thumbnailDirectory = $directory;
+                break;
+
+            //default
+            default:
+                break;
         }
 
         //return
-        return $baseDirectory;
+        return $directory;
     }
 
     /**
-     * get the original directory
+     * set if optimized images should be created
      *
-     * @return string
+     * @param bool $create
      */
-    protected function getOriginalDirectory()
+    public function setCreateOptimized($create)
     {
-        //get user defined original directory
-        $originalDirectory = config('uploader.original_directory', 'original');
-
-        //remove leading slashes
-        $originalDirectory = ltrim($originalDirectory, '/');
-
-        //remove trailing slashes and add one back
-        if ($originalDirectory != '') {
-            $originalDirectory = rtrim($originalDirectory, '/') . '/';
-        }
-
-        //return
-        return $originalDirectory;
+        $this->createOptimized = (bool)$create;
     }
 
     /**
-     * get the optimized directory
+     * set if thumbnail images should be created
      *
-     * @return string
+     * @param bool $create
      */
-    protected function getOptimizedDirectory()
+    public function setCreateThumbnails($create)
     {
-        //get user defined optimized directory
-        $optimizedDirectory = config('uploader.optimized_directory', '');
-
-        //remove leading slashes
-        $optimizedDirectory = ltrim($optimizedDirectory, '/');
-
-        //remove trailing slashes and add one back
-        if ($optimizedDirectory != '') {
-            $optimizedDirectory = rtrim($optimizedDirectory, '/') . '/';
-        }
-
-        //return
-        return $optimizedDirectory;
-    }
-
-    /**
-     * get the thumbnail directory
-     *
-     * @return string
-     */
-    protected function getThumbnailDirectory()
-    {
-        //get user defined thumbnail directory
-        $thumbnailDirectory = config('uploader.thumbnail_directory', 'thumbnail');
-
-        //remove leading slashes
-        $thumbnailDirectory = ltrim($thumbnailDirectory, '/');
-
-        //remove trailing slashes and add one back
-        if ($thumbnailDirectory != '') {
-            $thumbnailDirectory = rtrim($thumbnailDirectory, '/') . '/';
-        }
-
-        //return
-        return $thumbnailDirectory;
+        $this->createThumbnails = (bool)$create;
     }
 
     /**
@@ -709,7 +710,7 @@ class Uploader implements UploaderInterface
      */
     public function setOptimizedImageQuality($quality)
     {
-        if($quality > 0 AND $quality <= 100){
+        if ($quality > 0 AND $quality <= 100) {
             $this->optimizedImageQuality = $quality;
         }
     }
@@ -721,7 +722,7 @@ class Uploader implements UploaderInterface
      */
     public function setOptimizedMaximumWidth($width)
     {
-        if(is_int($width)){
+        if (is_int($width)) {
             $this->optimizedMaximumWidth = $width;
         }
     }
@@ -733,7 +734,7 @@ class Uploader implements UploaderInterface
      */
     public function setThumbnailWidth($width)
     {
-        if(is_int($width)){
+        if (is_int($width)) {
             $this->thumbnailWidth = $width;
         }
     }
