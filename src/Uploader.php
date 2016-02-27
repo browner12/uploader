@@ -191,12 +191,15 @@ class Uploader implements UploaderInterface
      * could be used when transferring over to a new server, or could be used if the optimized or thumbnail methods change
      *
      * @param string $path
-     * @return bool
+     * @return int
      */
     public function reprocess($path)
     {
         //get all files from original folder
-        $files = new DirectoryIterator($path . $this->originalDirectory);
+        $files = new DirectoryIterator($this->getPath($path, 'original'));
+
+        //initialize count
+        $count = 0;
 
         //loop through original files
         foreach ($files as $file) {
@@ -212,8 +215,14 @@ class Uploader implements UploaderInterface
 
                 //thumbnail
                 $this->createThumbnail($path, $file->getFilename());
+
+                //increment count
+                $count++;
             }
         }
+
+        //return
+        return $count;
     }
 
     /**
