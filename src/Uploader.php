@@ -337,7 +337,7 @@ class Uploader implements UploaderInterface
         $this->checkMimeType($file->getMimeType(), $type);
 
         //if a name is not passed, we will use the original file name
-        $name = ($name) ?: $file->getBasename('.' . $file->getExtension());
+        $name = ($name) ?: str_replace('.' . $file->getClientOriginalExtension(), '', $file->getClientOriginalName());
 
         //determine filename
         $newFilename = $name . '.' . strtolower($file->getClientOriginalExtension());
