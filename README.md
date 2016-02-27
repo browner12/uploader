@@ -164,11 +164,7 @@ array(9) {
 }
 ```
 
-By default the image uploader will make optimized and thumbnail versions of your file. The original, optimized, and thumbnail versions will be placed in the directories specified in your configuration. The reason these additional files are created for images is the help optimize bandwidth usages as much as possible. For example, if a user uploads a 25MB image file, you most likely do not want to display that image every time it is requested. Rather, you can display the optimized file, which can have a significantly smaller file size. If you only need a small version of the image, request the thumbnail instead. It will most likely have an even smaller file size. The use of optimized and thumbnail images will greatly help you improve load times, and performance. If you do not wish to create these additional files, and instead only want to keep the original, you may pass extra boolean parameters to the method.
-
-``` php
-$this->uploader->image($file, $path, $filename, $createThumbnail, $createOptimized);
-```
+By default the image uploader will make optimized and thumbnail versions of your file. The original, optimized, and thumbnail versions will be placed in the directories specified in your configuration. The reason these additional files are created for images is the help optimize bandwidth usages as much as possible. For example, if a user uploads a 25MB image file, you most likely do not want to display that image every time it is requested. Rather, you can display the optimized file, which can have a significantly smaller file size. If you only need a small version of the image, request the thumbnail instead. It will most likely have an even smaller file size. The use of optimized and thumbnail images will greatly help you improve load times, and performance. If you do not wish to create these additional files, you may update your configuration to turn those off.
 
 While the majority of the time you will only need to use your default configuration, there may be times when you wish to change a value simply for one upload. The package has setters to let you do just that. They should be called prior to uploading your file.
 
