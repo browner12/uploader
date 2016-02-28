@@ -6,6 +6,11 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [1.0.2] - 2016-02-28
+
+### Fixed
+- should not have been pulling in `symfony/symfony`. switched to use `symfony/http-foundation`.
+
 ## [1.0.1] - 2016-02-28
 
 ### Fixed
@@ -16,5 +21,6 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v1.0.1...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v1.0.2...HEAD
+[1.0.2]: https://github.com/browner12/money/compare/v1.0.1...v1.0.2
 [1.0.1]: https://github.com/browner12/money/compare/v1.0.0...v1.0.1
