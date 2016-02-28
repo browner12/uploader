@@ -4,11 +4,17 @@ All notable changes to `browner12/uploader` will be documented in this file.
 
 Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) principles.
 
-## UNRELEASED
+## [UNRELEASED]
+
+## [1.0.1] - 2016-02-28
+
+### Fixed
+- `symfony/symfony` dependency was pointing to `~2` when we should also allow `~3`.
 
 ## 1.0.0 - 2016-02-26
 
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v1.0.0...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v1.0.1...HEAD
+[1.0.1]: https://github.com/browner12/money/compare/v1.0.0...v1.0.1
