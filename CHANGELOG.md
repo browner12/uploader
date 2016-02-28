@@ -22,5 +22,5 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 - new uploader package
 
 [unreleased]: https://github.com/browner12/uploader/compare/v1.0.2...HEAD
-[1.0.2]: https://github.com/browner12/money/compare/v1.0.1...v1.0.2
-[1.0.1]: https://github.com/browner12/money/compare/v1.0.0...v1.0.1
+[1.0.2]: https://github.com/browner12/uploader/compare/v1.0.1...v1.0.2
+[1.0.1]: https://github.com/browner12/uploader/compare/v1.0.0...v1.0.1
