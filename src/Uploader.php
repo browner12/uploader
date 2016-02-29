@@ -246,6 +246,9 @@ class Uploader implements UploaderInterface
         //create optimized image
         $image = $this->image->make($this->getPath($path, 'original') . $filename);
 
+        //orientate the image
+        $image->orientate();
+
         //constrain optimized width
         if ($this->optimizedMaximumWidth > 0) {
             $image->widen($this->optimizedMaximumWidth, function ($constraint) {
@@ -277,6 +280,7 @@ class Uploader implements UploaderInterface
 
         //create thumbnail image
         $this->image->make($this->getPath($path, 'original') . $filename)
+                    ->orientate()
                     ->widen($this->thumbnailWidth)
                     ->save($thumbnailPath . $filename);
 
