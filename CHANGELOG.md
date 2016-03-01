@@ -6,6 +6,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+### Fixed
+- sanitize the filename if using the original filename
+
 ## [1.0.3] - 2016-02-29
 
 ### Fixed

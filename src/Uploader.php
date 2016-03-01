@@ -350,7 +350,7 @@ class Uploader implements UploaderInterface
         $this->checkMimeType($file->getMimeType(), $type);
 
         //if a name is not passed, we will use the original file name
-        $name = ($name) ?: str_replace('.' . $file->getClientOriginalExtension(), '', $file->getClientOriginalName());
+        $name = ($name) ?: $this->sanitizeFileName($file);
 
         //determine filename
         $newFilename = $name . '.' . strtolower($file->getClientOriginalExtension());
@@ -372,6 +372,21 @@ class Uploader implements UploaderInterface
 
         //failed upload
         throw new UploaderException('Could not upload ' . $type . $file->getClientOriginalName() . '.');
+    }
+
+    /**
+     * sanitize the file name
+     *
+     * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
+     * @return mixed
+     */
+    private function sanitizeFileName(UploadedFile $file)
+    {
+        //remove extension
+        $name = str_replace('.' . $file->getClientOriginalExtension(), '', $file->getClientOriginalName());
+
+        //encode spaces
+        return str_replace(' ', '-', $name);
     }
 
     /**
