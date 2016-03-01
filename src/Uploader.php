@@ -378,15 +378,15 @@ class Uploader implements UploaderInterface
      * sanitize the file name
      *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
-     * @return mixed
+     * @return string
      */
     private function sanitizeFileName(UploadedFile $file)
     {
         //remove extension
         $name = str_replace('.' . $file->getClientOriginalExtension(), '', $file->getClientOriginalName());
 
-        //encode spaces
-        return str_replace(' ', '-', $name);
+        //sanitize filename
+        return preg_replace('/[^a-zA-Z0-9-_]/', '-', $name);
     }
 
     /**
