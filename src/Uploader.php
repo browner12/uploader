@@ -193,11 +193,20 @@ class Uploader implements UploaderInterface
      * @param string $path
      * @param bool   $overwrite
      * @return array
+     * @throws \browner12\uploader\UploaderException
      */
     public function reprocess($path, $overwrite = false)
     {
+        //get original path
+        $originalPath = $this->getPath($path, 'original');
+
+        //directory does not exist
+        if (!file_exists($originalPath)){
+            throw new UploaderException('unable to reprocess directory ' . $originalPath . ' which does not exist');
+        }
+
         //get all files from original folder
-        $files = new DirectoryIterator($this->getPath($path, 'original'));
+        $files = new DirectoryIterator($originalPath);
 
         //initialize counts
         $optimized = 0;
@@ -265,7 +274,7 @@ class Uploader implements UploaderInterface
             //return
             return ['optimized_url' => $optimizedPath . $filename];
         }
-        
+
         //optimized file not created
         return false;
     }
