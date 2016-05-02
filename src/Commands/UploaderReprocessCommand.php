@@ -13,7 +13,7 @@ class UploaderReprocessCommand extends Command
     /**
      * @var string
      */
-    protected $description = 'Create optimized and thumbnail images from originals in selected directories.';
+    protected $description = 'Create optimized and thumbnail images from originals.';
 
     /**
      * @var \browner12\uploader\UploaderInterface
