@@ -164,7 +164,7 @@ class Uploader implements UploaderInterface
         if ($original AND $this->createOptimized) {
 
             //create optimized image
-            $optimized = $this->createOptimized($path, $original['name']);
+            $optimized = $this->createOptimized($path, $original['name'], true);
 
             //append to return
             $original = array_merge($original, $optimized);
@@ -174,7 +174,7 @@ class Uploader implements UploaderInterface
         if ($original AND $this->createThumbnails) {
 
             //create thumbnail image
-            $thumbnail = $this->createThumbnail($path, $original['name']);
+            $thumbnail = $this->createThumbnail($path, $original['name'], true);
 
             //append to return
             $original = array_merge($original, $thumbnail);
@@ -191,15 +191,17 @@ class Uploader implements UploaderInterface
      * could be used when transferring over to a new server, or could be used if the optimized or thumbnail methods change
      *
      * @param string $path
-     * @return int
+     * @param bool   $overwrite
+     * @return array
      */
-    public function reprocess($path)
+    public function reprocess($path, $overwrite = false)
     {
         //get all files from original folder
         $files = new DirectoryIterator($this->getPath($path, 'original'));
 
-        //initialize count
-        $count = 0;
+        //initialize counts
+        $optimized = 0;
+        $thumbnails = 0;
 
         //loop through original files
         foreach ($files as $file) {
@@ -211,18 +213,15 @@ class Uploader implements UploaderInterface
             if (!$file->isDot() AND !$file->isDir() AND $file->getExtension() != 'gitignore') {
 
                 //optimize
-                $this->createOptimized($path, $file->getFilename());
+                ($this->createOptimized($path, $file->getFilename(), $overwrite)) ? $optimized++ : null;
 
                 //thumbnail
-                $this->createThumbnail($path, $file->getFilename());
-
-                //increment count
-                $count++;
+                ($this->createThumbnail($path, $file->getFilename(), $overwrite)) ? $thumbnails++ : null;
             }
         }
 
         //return
-        return $count;
+        return ['optimized' => $optimized, 'thumbnails' => $thumbnails];
     }
 
     /**
@@ -233,34 +232,42 @@ class Uploader implements UploaderInterface
      *
      * @param string $path
      * @param string $filename
-     * @return array
+     * @param bool   $overwrite
+     * @return array|bool
      */
-    protected function createOptimized($path, $filename)
+    protected function createOptimized($path, $filename, $overwrite = false)
     {
         //determine optimized directory
         $optimizedPath = $this->getPath($path, 'optimized');
 
-        //create directory
-        $this->createDirectory($optimizedPath);
+        //only create if optimized file does not exist or we want to overwrite existing file
+        if(!file_exists($optimizedPath . $filename) OR $overwrite){
 
-        //create optimized image
-        $image = $this->image->make($this->getPath($path, 'original') . $filename);
+            //create directory
+            $this->createDirectory($optimizedPath);
 
-        //orientate the image
-        $image->orientate();
+            //create optimized image
+            $image = $this->image->make($this->getPath($path, 'original') . $filename);
 
-        //constrain optimized width
-        if ($this->optimizedMaximumWidth > 0) {
-            $image->widen($this->optimizedMaximumWidth, function ($constraint) {
-                $constraint->upsize();
-            });
+            //orientate the image
+            $image->orientate();
+
+            //constrain optimized width
+            if ($this->optimizedMaximumWidth > 0) {
+                $image->widen($this->optimizedMaximumWidth, function ($constraint) {
+                    $constraint->upsize();
+                });
+            }
+
+            //save image
+            $image->save($optimizedPath . $filename, $this->optimizedImageQuality);
+
+            //return
+            return ['optimized_url' => $optimizedPath . $filename];
         }
-
-        //save image
-        $image->save($optimizedPath . $filename, $this->optimizedImageQuality);
-
-        //return
-        return ['optimized_url' => $optimizedPath . $filename];
+        
+        //optimized file not created
+        return false;
     }
 
     /**
@@ -268,24 +275,32 @@ class Uploader implements UploaderInterface
      *
      * @param string $path
      * @param string $filename
-     * @return array
+     * @param bool   $overwrite
+     * @return array|bool
      */
-    protected function createThumbnail($path, $filename)
+    protected function createThumbnail($path, $filename, $overwrite = false)
     {
         //determine thumbnail directory
         $thumbnailPath = $this->getPath($path, 'thumbnail');
 
-        //create directory
-        $this->createDirectory($thumbnailPath);
+        //only create if thumbnail file does not exist or we want to overwrite existing file
+        if(!file_exists($thumbnailPath . $filename) OR $overwrite){
 
-        //create thumbnail image
-        $this->image->make($this->getPath($path, 'original') . $filename)
-                    ->orientate()
-                    ->widen($this->thumbnailWidth)
-                    ->save($thumbnailPath . $filename);
+            //create directory
+            $this->createDirectory($thumbnailPath);
 
-        //return
-        return ['thumbnail_url' => $thumbnailPath . $filename];
+            //create thumbnail image
+            $this->image->make($this->getPath($path, 'original') . $filename)
+                ->orientate()
+                ->widen($this->thumbnailWidth)
+                ->save($thumbnailPath . $filename);
+
+            //return
+            return ['thumbnail_url' => $thumbnailPath . $filename];
+        }
+
+        //thumbnail file not created
+        return false;
     }
 
     /**

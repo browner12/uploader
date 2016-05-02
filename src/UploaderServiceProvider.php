@@ -21,6 +21,11 @@ class UploaderServiceProvider extends ServiceProvider
      */
     public function boot()
     {
+        //register commands
+        $this->commands([
+            Commands\UploaderReprocessCommand::class,
+        ]);
+        
         //publish config
         $this->publishes([
             __DIR__.'/config/uploader.php' => config_path('uploader.php'),

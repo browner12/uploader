@@ -48,9 +48,10 @@ interface UploaderInterface
      * reprocess
      *
      * @param string $path
+     * @param bool   $overwrite
      * @return bool
      */
-    public function reprocess($path);
+    public function reprocess($path, $overwrite = false);
 
     /**
      * set a directory

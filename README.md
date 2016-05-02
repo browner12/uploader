@@ -186,6 +186,18 @@ $this->uploader->setOptimizedMaximumWidth(500);
 $this->uploader->setThumbnailWidth(200);
 ```
 
+There may be times you need to 'reprocess' the images you have uploaded. You may choose to skip optimizing and creating thumbnails when an image is initially uploaded, and instead do this all at once at a specific time. You may also change your mind on configuration values. For example, you could start with an optimized image quality of 80, and decide to drop it to 60. The `Uploader` has a handy `reprocess` method available to you. Simply pass it the path to the files you would like to process, and an optional parameter to force overwriting existing files.
+
+``` php
+$this->uploader->reprocess('dogs', true);
+```
+
+This can be called manually in the code, but there is also a handy command available so you can schedule this to your liking. The first argument is a comma separated value of the paths you wish to process. You may also pass an optional `overwrite` flag.
+
+``` sh
+php artisan uploader:reprocess dogs,cats --overwrite
+```
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.

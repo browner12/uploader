@@ -6,6 +6,14 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [1.1.0] - 2016-05-01
+
+## Added
+- new Artisan command to reprocess images.
+
+## Changed
+- creating optimized or thumbnail images will no longer overwrite existing files by default. an additional parameter, `overwrite`, has been added to force overwriting existing files. 
+
 ## [1.0.4] - 2016-02-29
 
 ### Fixed
@@ -31,7 +39,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v1.0.4...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v1.1.0...HEAD
+[1.1.0]: https://github.com/browner12/uploader/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/browner12/uploader/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/browner12/uploader/compare/v1.0.2...v1.0.3
 [1.0.2]: https://github.com/browner12/uploader/compare/v1.0.1...v1.0.2
