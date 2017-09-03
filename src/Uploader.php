@@ -1,5 +1,9 @@
 <?php namespace browner12\uploader;
 
+use browner12\uploader\Exceptions\FileUploadedTooLarge;
+use browner12\uploader\Exceptions\UnapprovedExtension;
+use browner12\uploader\Exceptions\UnapprovedMimeType;
+use browner12\uploader\Exceptions\UploaderException;
 use DirectoryIterator;
 use Intervention\Image\ImageManager;
 use Symfony\Component\HttpFoundation\File\UploadedFile;
@@ -193,7 +197,7 @@ class Uploader implements UploaderInterface
      * @param string $path
      * @param bool   $overwrite
      * @return array
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function reprocess($path, $overwrite = false)
     {
@@ -360,7 +364,7 @@ class Uploader implements UploaderInterface
      * @param string                                              $name
      * @param string                                              $type
      * @return array
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     protected function upload(UploadedFile $file, $path, $name = null, $type)
     {
@@ -417,13 +421,13 @@ class Uploader implements UploaderInterface
      * check file size
      *
      * @param int $size
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\FileUploadedTooLarge
      */
     protected function checkSize($size)
     {
         //too big
         if ($size > $this->maximumUploadSize) {
-            throw new UploaderException('File size is greater than maximum allowed size of ' . $this->formatBytes($this->maximumUploadSize));
+            throw new FileUploadedTooLarge('File size is greater than maximum allowed size of ' . $this->formatBytes($this->maximumUploadSize));
         }
     }
 
@@ -432,7 +436,7 @@ class Uploader implements UploaderInterface
      *
      * @param string $extension
      * @param string $type
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UnapprovedExtension
      */
     protected function checkExtension($extension, $type)
     {
@@ -441,7 +445,7 @@ class Uploader implements UploaderInterface
 
         //not approved
         if (!in_array(strtolower($extension), $haystack)) {
-            throw new UploaderException('File does not have an approved extension: ' . implode(', ', $haystack));
+            throw new UnapprovedExtension('File does not have an approved extension: ' . implode(', ', $haystack));
         }
     }
 
@@ -450,7 +454,7 @@ class Uploader implements UploaderInterface
      *
      * @param string $mimeType
      * @param string $type
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UnapprovedMimeType
      */
     protected function checkMimeType($mimeType, $type)
     {
@@ -459,7 +463,7 @@ class Uploader implements UploaderInterface
 
         //not approved
         if (!in_array(strtolower($mimeType), $haystack)) {
-            throw new UploaderException('File does not have an approved type: ' . implode(', ', $haystack));
+            throw new UnapprovedMimeType('File does not have an approved type: ' . implode(', ', $haystack));
         }
     }
 
