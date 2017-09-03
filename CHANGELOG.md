@@ -6,6 +6,11 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [2.0.0] - 2017-9-03
+
+## Added
+- new marker exceptions for more granularity when dealing with errors.
+
 ## [1.1.0] - 2016-05-01
 
 ## Added
@@ -39,7 +44,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v1.1.0...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v2.0.0...HEAD
+[2.0.0]: https://github.com/browner12/uploader/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/browner12/uploader/compare/v1.0.4...v1.1.0
 [1.0.4]: https://github.com/browner12/uploader/compare/v1.0.3...v1.0.4
 [1.0.3]: https://github.com/browner12/uploader/compare/v1.0.2...v1.0.3
