@@ -1,11 +1,11 @@
-<?php namespace browner12\uploader;
+<?php namespace browner12\uploader\Exceptions;
 
 use Exception;
 
 class UploaderException extends Exception
 {
     /**
-     * constructor
+     * base exception for package
      *
      * @param string    $message
      * @param int       $code
