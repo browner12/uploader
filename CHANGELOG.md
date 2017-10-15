@@ -6,17 +6,26 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+### Added
+- added events so users can hook into process
+
+### Changed
+- use the `&&` logical operator instead of `AND`
+
+### Fixed
+- fix some docblocks to use the correct namespace for the exceptions
+
 ## [2.0.0] - 2017-9-03
 
-## Added
+### Added
 - new marker exceptions for more granularity when dealing with errors.
 
 ## [1.1.0] - 2016-05-01
 
-## Added
+### Added
 - new Artisan command to reprocess images.
 
-## Changed
+### Changed
 - creating optimized or thumbnail images will no longer overwrite existing files by default. an additional parameter, `overwrite`, has been added to force overwriting existing files. 
 
 ## [1.0.4] - 2016-02-29
