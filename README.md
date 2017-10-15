@@ -198,6 +198,17 @@ This can be called manually in the code, but there is also a handy command avail
 php artisan uploader:reprocess dogs,cats --overwrite
 ```
 
+## Events
+
+This package fires the following events:
+
++ FileOptimized
++ FilesReprocessed
++ FileThumbnailed
++ FileUploaded
+
+You can use these events to hook into the operation and do things like fire off notifications.
+
 ## Change log
 
 Please see [CHANGELOG](CHANGELOG.md) for more information what has changed recently.

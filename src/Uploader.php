@@ -1,5 +1,9 @@
 <?php namespace browner12\uploader;
 
+use browner12\uploader\Events\FileOptimized;
+use browner12\uploader\Events\FilesReprocessed;
+use browner12\uploader\Events\FileThumbnailed;
+use browner12\uploader\Events\FileUploaded;
 use browner12\uploader\Exceptions\FileUploadedTooLarge;
 use browner12\uploader\Exceptions\UnapprovedExtension;
 use browner12\uploader\Exceptions\UnapprovedMimeType;
@@ -154,7 +158,7 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function image(UploadedFile $file, $path, $name = null)
     {
@@ -165,7 +169,7 @@ class Uploader implements UploaderInterface
         $original = $this->upload($file, $originalPath, $name, 'image');
 
         //optimized
-        if ($original AND $this->createOptimized) {
+        if ($original && $this->createOptimized) {
 
             //create optimized image
             $optimized = $this->createOptimized($path, $original['name'], true);
@@ -175,7 +179,7 @@ class Uploader implements UploaderInterface
         }
 
         //thumbnail
-        if ($original AND $this->createThumbnails) {
+        if ($original && $this->createThumbnails) {
 
             //create thumbnail image
             $thumbnail = $this->createThumbnail($path, $original['name'], true);
@@ -205,7 +209,7 @@ class Uploader implements UploaderInterface
         $originalPath = $this->getPath($path, 'original');
 
         //directory does not exist
-        if (!file_exists($originalPath)){
+        if (!file_exists($originalPath)) {
             throw new UploaderException('unable to reprocess directory ' . $originalPath . ' which does not exist');
         }
 
@@ -223,7 +227,7 @@ class Uploader implements UploaderInterface
             set_time_limit(30);
 
             //ignore dots, dirs, and gitignore
-            if (!$file->isDot() AND !$file->isDir() AND $file->getExtension() != 'gitignore') {
+            if (!$file->isDot() && !$file->isDir() && $file->getExtension() != 'gitignore') {
 
                 //optimize
                 ($this->createOptimized($path, $file->getFilename(), $overwrite)) ? $optimized++ : null;
@@ -232,6 +236,9 @@ class Uploader implements UploaderInterface
                 ($this->createThumbnail($path, $file->getFilename(), $overwrite)) ? $thumbnails++ : null;
             }
         }
+
+        //fire event
+        event(new FilesReprocessed());
 
         //return
         return ['optimized' => $optimized, 'thumbnails' => $thumbnails];
@@ -254,7 +261,7 @@ class Uploader implements UploaderInterface
         $optimizedPath = $this->getPath($path, 'optimized');
 
         //only create if optimized file does not exist or we want to overwrite existing file
-        if(!file_exists($optimizedPath . $filename) OR $overwrite){
+        if (!file_exists($optimizedPath . $filename) OR $overwrite) {
 
             //create directory
             $this->createDirectory($optimizedPath);
@@ -274,6 +281,9 @@ class Uploader implements UploaderInterface
 
             //save image
             $image->save($optimizedPath . $filename, $this->optimizedImageQuality);
+
+            //fire event
+            event(new FileOptimized());
 
             //return
             return ['optimized_url' => $optimizedPath . $filename];
@@ -297,16 +307,19 @@ class Uploader implements UploaderInterface
         $thumbnailPath = $this->getPath($path, 'thumbnail');
 
         //only create if thumbnail file does not exist or we want to overwrite existing file
-        if(!file_exists($thumbnailPath . $filename) OR $overwrite){
+        if (!file_exists($thumbnailPath . $filename) OR $overwrite) {
 
             //create directory
             $this->createDirectory($thumbnailPath);
 
             //create thumbnail image
             $this->image->make($this->getPath($path, 'original') . $filename)
-                ->orientate()
-                ->widen($this->thumbnailWidth)
-                ->save($thumbnailPath . $filename);
+                        ->orientate()
+                        ->widen($this->thumbnailWidth)
+                        ->save($thumbnailPath . $filename);
+
+            //fire event
+            event(new FileThumbnailed());
 
             //return
             return ['thumbnail_url' => $thumbnailPath . $filename];
@@ -349,7 +362,7 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function document(UploadedFile $file, $path, $name = null)
     {
@@ -385,6 +398,9 @@ class Uploader implements UploaderInterface
 
         //successful upload
         if ($file->move($path, $newFilename)) {
+
+            //fire event
+            event(new FileUploaded());
 
             //return
             return [
@@ -766,7 +782,7 @@ class Uploader implements UploaderInterface
      */
     public function setOptimizedImageQuality($quality)
     {
-        if ($quality > 0 AND $quality <= 100) {
+        if ($quality > 0 && $quality <= 100) {
             $this->optimizedImageQuality = $quality;
         }
     }
