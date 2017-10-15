@@ -169,7 +169,7 @@ class Uploader implements UploaderInterface
         $original = $this->upload($file, $originalPath, $name, 'image');
 
         //optimized
-        if ($original AND $this->createOptimized) {
+        if ($original && $this->createOptimized) {
 
             //create optimized image
             $optimized = $this->createOptimized($path, $original['name'], true);
@@ -179,7 +179,7 @@ class Uploader implements UploaderInterface
         }
 
         //thumbnail
-        if ($original AND $this->createThumbnails) {
+        if ($original && $this->createThumbnails) {
 
             //create thumbnail image
             $thumbnail = $this->createThumbnail($path, $original['name'], true);
@@ -227,7 +227,7 @@ class Uploader implements UploaderInterface
             set_time_limit(30);
 
             //ignore dots, dirs, and gitignore
-            if (!$file->isDot() AND !$file->isDir() AND $file->getExtension() != 'gitignore') {
+            if (!$file->isDot() && !$file->isDir() && $file->getExtension() != 'gitignore') {
 
                 //optimize
                 ($this->createOptimized($path, $file->getFilename(), $overwrite)) ? $optimized++ : null;
@@ -782,7 +782,7 @@ class Uploader implements UploaderInterface
      */
     public function setOptimizedImageQuality($quality)
     {
-        if ($quality > 0 AND $quality <= 100) {
+        if ($quality > 0 && $quality <= 100) {
             $this->optimizedImageQuality = $quality;
         }
     }
