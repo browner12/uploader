@@ -1,5 +1,9 @@
 <?php namespace browner12\uploader;
 
+use browner12\uploader\Events\FileOptimized;
+use browner12\uploader\Events\FilesReprocessed;
+use browner12\uploader\Events\FileThumbnailed;
+use browner12\uploader\Events\FileUploaded;
 use browner12\uploader\Exceptions\FileUploadedTooLarge;
 use browner12\uploader\Exceptions\UnapprovedExtension;
 use browner12\uploader\Exceptions\UnapprovedMimeType;
@@ -233,6 +237,9 @@ class Uploader implements UploaderInterface
             }
         }
 
+        //fire event
+        event(new FilesReprocessed());
+
         //return
         return ['optimized' => $optimized, 'thumbnails' => $thumbnails];
     }
@@ -275,6 +282,9 @@ class Uploader implements UploaderInterface
             //save image
             $image->save($optimizedPath . $filename, $this->optimizedImageQuality);
 
+            //fire event
+            event(new FileOptimized());
+
             //return
             return ['optimized_url' => $optimizedPath . $filename];
         }
@@ -307,6 +317,8 @@ class Uploader implements UploaderInterface
                 ->orientate()
                 ->widen($this->thumbnailWidth)
                 ->save($thumbnailPath . $filename);
+            //fire event
+            event(new FileThumbnailed());
 
             //return
             return ['thumbnail_url' => $thumbnailPath . $filename];
@@ -385,6 +397,9 @@ class Uploader implements UploaderInterface
 
         //successful upload
         if ($file->move($path, $newFilename)) {
+
+            //fire event
+            event(new FileUploaded());
 
             //return
             return [
