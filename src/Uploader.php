@@ -158,7 +158,7 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function image(UploadedFile $file, $path, $name = null)
     {
@@ -209,7 +209,7 @@ class Uploader implements UploaderInterface
         $originalPath = $this->getPath($path, 'original');
 
         //directory does not exist
-        if (!file_exists($originalPath)){
+        if (!file_exists($originalPath)) {
             throw new UploaderException('unable to reprocess directory ' . $originalPath . ' which does not exist');
         }
 
@@ -261,7 +261,7 @@ class Uploader implements UploaderInterface
         $optimizedPath = $this->getPath($path, 'optimized');
 
         //only create if optimized file does not exist or we want to overwrite existing file
-        if(!file_exists($optimizedPath . $filename) OR $overwrite){
+        if (!file_exists($optimizedPath . $filename) OR $overwrite) {
 
             //create directory
             $this->createDirectory($optimizedPath);
@@ -307,16 +307,17 @@ class Uploader implements UploaderInterface
         $thumbnailPath = $this->getPath($path, 'thumbnail');
 
         //only create if thumbnail file does not exist or we want to overwrite existing file
-        if(!file_exists($thumbnailPath . $filename) OR $overwrite){
+        if (!file_exists($thumbnailPath . $filename) OR $overwrite) {
 
             //create directory
             $this->createDirectory($thumbnailPath);
 
             //create thumbnail image
             $this->image->make($this->getPath($path, 'original') . $filename)
-                ->orientate()
-                ->widen($this->thumbnailWidth)
-                ->save($thumbnailPath . $filename);
+                        ->orientate()
+                        ->widen($this->thumbnailWidth)
+                        ->save($thumbnailPath . $filename);
+
             //fire event
             event(new FileThumbnailed());
 
@@ -361,7 +362,7 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
-     * @throws \browner12\uploader\UploaderException
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function document(UploadedFile $file, $path, $name = null)
     {
