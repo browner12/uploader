@@ -6,6 +6,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+### Changed
+- use the `||` logical operator instead of `OR`
+
 ## [2.1.0] - 2017-10-15
 
 ### Added

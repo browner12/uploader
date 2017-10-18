@@ -261,7 +261,7 @@ class Uploader implements UploaderInterface
         $optimizedPath = $this->getPath($path, 'optimized');
 
         //only create if optimized file does not exist or we want to overwrite existing file
-        if (!file_exists($optimizedPath . $filename) OR $overwrite) {
+        if (!file_exists($optimizedPath . $filename) || $overwrite) {
 
             //create directory
             $this->createDirectory($optimizedPath);
@@ -307,7 +307,7 @@ class Uploader implements UploaderInterface
         $thumbnailPath = $this->getPath($path, 'thumbnail');
 
         //only create if thumbnail file does not exist or we want to overwrite existing file
-        if (!file_exists($thumbnailPath . $filename) OR $overwrite) {
+        if (!file_exists($thumbnailPath . $filename) || $overwrite) {
 
             //create directory
             $this->createDirectory($thumbnailPath);
