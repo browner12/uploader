@@ -6,6 +6,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [2.1.1] - 2017-10-17
+
 ### Changed
 - use the `||` logical operator instead of `OR`
 
@@ -58,7 +60,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v2.1.0...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v2.1.1...HEAD
+[2.1.1]: https://github.com/browner12/uploader/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/browner12/uploader/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/browner12/uploader/compare/v1.1.0...v2.0.0
 [1.1.0]: https://github.com/browner12/uploader/compare/v1.0.4...v1.1.0
