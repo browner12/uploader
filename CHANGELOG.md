@@ -6,6 +6,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+### Added
+- support Laravel auto-discovery
+
 ## [2.1.1] - 2017-10-17
 
 ### Changed
