@@ -6,6 +6,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+### Added
+- config option for default filesystem disk
+
 ### Changed
 - bump versions of PHP, Laravel, Symfony, and PHPUnit
 ### Added
