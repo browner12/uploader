@@ -6,6 +6,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+### Changed
+- bump versions of PHP, Laravel, Symfony, and PHPUnit
 ### Added
 - support Laravel auto-discovery
 
