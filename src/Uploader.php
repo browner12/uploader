@@ -158,6 +158,9 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
+     * @throws \browner12\uploader\Exceptions\FileUploadedTooLarge
+     * @throws \browner12\uploader\Exceptions\UnapprovedExtension
+     * @throws \browner12\uploader\Exceptions\UnapprovedMimeType
      * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function image(UploadedFile $file, $path, $name = null)
@@ -336,6 +339,10 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
+     * @throws \browner12\uploader\Exceptions\FileUploadedTooLarge
+     * @throws \browner12\uploader\Exceptions\UnapprovedExtension
+     * @throws \browner12\uploader\Exceptions\UnapprovedMimeType
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function video(UploadedFile $file, $path, $name = null)
     {
@@ -349,6 +356,10 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
+     * @throws \browner12\uploader\Exceptions\FileUploadedTooLarge
+     * @throws \browner12\uploader\Exceptions\UnapprovedExtension
+     * @throws \browner12\uploader\Exceptions\UnapprovedMimeType
+     * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function audio(UploadedFile $file, $path, $name = null)
     {
@@ -362,6 +373,9 @@ class Uploader implements UploaderInterface
      * @param string                                              $path
      * @param string                                              $name
      * @return array
+     * @throws \browner12\uploader\Exceptions\FileUploadedTooLarge
+     * @throws \browner12\uploader\Exceptions\UnapprovedExtension
+     * @throws \browner12\uploader\Exceptions\UnapprovedMimeType
      * @throws \browner12\uploader\Exceptions\UploaderException
      */
     public function document(UploadedFile $file, $path, $name = null)
@@ -377,6 +391,9 @@ class Uploader implements UploaderInterface
      * @param string                                              $name
      * @param string                                              $type
      * @return array
+     * @throws \browner12\uploader\Exceptions\FileUploadedTooLarge
+     * @throws \browner12\uploader\Exceptions\UnapprovedExtension
+     * @throws \browner12\uploader\Exceptions\UnapprovedMimeType
      * @throws \browner12\uploader\Exceptions\UploaderException
      */
     protected function upload(UploadedFile $file, $path, $name = null, $type)
