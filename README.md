@@ -13,7 +13,7 @@ Uploader is a package that provides a simple interface to upload image and docum
 
 Via Composer
 
-``` bash
+```bash
 $ composer require browner12/uploader
 ```
 
@@ -21,23 +21,25 @@ $ composer require browner12/uploader
 
 Add the service provider to the providers array in  `config/app.php`.
 
-``` php
+```php
 'providers' => [
     browner12\uploader\UploaderServiceProvider::class,
 ];
 ```
 
+If you are using Laravel's auto-discovery feature, you can omit this line.
+
 ## Publishing
 
 You can publish everything at once
 
-``` php
+```php
 php artisan vendor:publish --provider="browner12\uploader\UploaderServiceProvider"
 ```
 
 or you can publish groups individually.
 
-``` php
+```php
 php artisan vendor:publish --provider="browner12\uploader\UploaderServiceProvider" --tag="config"
 ```
 
@@ -45,15 +47,21 @@ php artisan vendor:publish --provider="browner12\uploader\UploaderServiceProvide
 
 Setting up your new `uploader.php` configuration file is very important to the uploader behaving as you expect. Each option is well documented in the file, but we will also address them here, due to their integral role.
 
-First off we have the `base_directory`. This is where *all* of your uploads will be stored, relative to your resource root (most likely the `public` directory). While you may choose to leave this option blank, one benefit to having a directory for all user generated content is it is easy to add to your `.gitignore`, and it is easier to transfer if needed.
+First off we have the `disk`. This references your Laravel filesystem disk, and your options will be defined in your `config/filesystem.php` file.
 
-``` php
+```php
+'disk' => env('UPLOADER_DISK', 'public'),
+```
+
+Next we have the `base_directory`. This is where *all* of your uploads will be stored, relative to your resource root (most likely the `public` directory). While you may choose to leave this option blank, one benefit to having a directory for all user generated content is it is easy to add to your `.gitignore`, and it is easier to transfer if needed.
+
+```php
 'base_directory' => '',
 ```
 
 Next we have the `original_directory`, `optimized_directory`, and `thumbnail_directory`. When you upload an image, by default, the package will automatically create optimized and thumbnail versions of the file, which can drastically help improve page loads. With these options, you can set the name of the directory each goes into.
 
-``` php
+```php
 'original_directory' => 'original',
 'optimized_directory' => '',
 'thumbnail_directory' => 'thumbnail',
@@ -61,14 +69,14 @@ Next we have the `original_directory`, `optimized_directory`, and `thumbnail_dir
 
 Next you can set if you want optimized images and thumbnails to be automatically created when you upload an image. By default, they are turned on because this can aid in drastically reducing your bandwidth usage and load times.
 
-``` php
+```php
 'create_optimized' => true,
 'create_thumbnails' => true,
 ```
 
 Next you will set the default extensions and mime types for each type of upload. We include some sensible defaults.
 
-``` php
+```php
 'document_extensions' => ['pdf', 'doc', 'docx', 'ppt'],
 'image_extensions' => ['jpg', 'jpeg', 'gif', 'png'],
 'video_extensions' => ['avi', 'mov', 'mp4', 'ogg'],
@@ -82,20 +90,20 @@ Next you will set the default extensions and mime types for each type of upload.
 
 The maximum upload size is the largest file size (in bytes) you will accept for an upload. Remember that if this value is larger than the maximum upload size of your server, it could result in errors.
 
-``` php
+```php
 'maximum_upload_size' => 32000000,
 ```
 
 When you upload images, and an optimized image is created, two properties will affect the optimized image. First, you can set the quality of the new image to a value between 1 and 100. You may also set a maximum width of the optimized image. This can be helpful to keep the file size down as well, because simply changing the quality of a very large image, is still going to result in a very large file size. If you do not wish to constrain the width, set the value to 0.
 
-``` php
+```php
 'optimized_image_quality' => 60,
 'optimized_maximum_width' => 1000,
 ```
 
 Lastly, you can set the width of the generated thumbnails.
 
-``` php
+```php
 'thumbnail_width' => 100,
 ```
 
@@ -103,13 +111,13 @@ Lastly, you can set the width of the generated thumbnails.
 
 Start by manually instantiating the uploader
 
-``` php
+```php
 $uploader = new Uploader();
 ```
 
 or using dependency injection.
 
-``` php
+```php
 public function __construct(UploaderInterface $uploader)
 {
     $this->uploader = $uploader;
@@ -118,7 +126,7 @@ public function __construct(UploaderInterface $uploader)
 
 There are four main methods with the uploader, each for uploading a different type of file.
 
-``` php
+```php
 $this->uploader->document($file, $path, $filename);
 $this->uploader->image($file, $path, $filename);
 $this->uploader->video($file, $path, $filename);
@@ -129,7 +137,7 @@ One important thing to note is that `$file` must be an instance of `\Symfony\Com
 
 Let's look at an example of how to best use the uploader inside of a Laravel controller.
 
-``` php
+```php
 public function store(Request $request)
 {
     try{
@@ -150,7 +158,7 @@ public function store(Request $request)
 
 Notice the uploader also returns information to you. The `$file` will be an array with information similar to the following:
 
-``` php
+```php
 array(9) {
     ["id"] => string(7) "1.jpg"
     ["name"] => string(11) "1.jpg"
@@ -168,7 +176,7 @@ By default the image uploader will make optimized and thumbnail versions of your
 
 While the majority of the time you will only need to use your default configuration, there may be times when you wish to change a value simply for one upload. The package has setters to let you do just that. They should be called prior to uploading your file.
 
-``` php
+```php
 $this->uploader->setDirectory('base', 'newBaseDirectory');
 $this->uploader->setDirectory('original', 'newOriginalDirectory');
 $this->uploader->setDirectory('optimized', 'newOptimizedDirectory');
@@ -188,7 +196,7 @@ $this->uploader->setThumbnailWidth(200);
 
 There may be times you need to 'reprocess' the images you have uploaded. You may choose to skip optimizing and creating thumbnails when an image is initially uploaded, and instead do this all at once at a specific time. You may also change your mind on configuration values. For example, you could start with an optimized image quality of 80, and decide to drop it to 60. The `Uploader` has a handy `reprocess` method available to you. Simply pass it the path to the files you would like to process, and an optional parameter to force overwriting existing files.
 
-``` php
+```php
 $this->uploader->reprocess('dogs', true);
 ```
 
