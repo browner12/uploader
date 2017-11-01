@@ -584,20 +584,26 @@ class Uploader implements UploaderInterface
      * set if optimized images should be created
      *
      * @param bool $create
+     * @return \browner12\uploader\Uploader
      */
     public function setCreateOptimized($create)
     {
         $this->createOptimized = (bool)$create;
+
+        return $this;
     }
 
     /**
      * set if thumbnail images should be created
      *
      * @param bool $create
+     * @return \browner12\uploader\Uploader
      */
     public function setCreateThumbnails($create)
     {
         $this->createThumbnails = (bool)$create;
+
+        return $this;
     }
 
     /**
@@ -641,6 +647,7 @@ class Uploader implements UploaderInterface
     /**
      * @param string $type
      * @param array  $extensions
+     * @return \browner12\uploader\Uploader
      */
     public function setValidExtensions($type, array $extensions)
     {
@@ -670,6 +677,8 @@ class Uploader implements UploaderInterface
             default:
                 break;
         }
+
+        return $this;
     }
 
     /**
@@ -713,6 +722,7 @@ class Uploader implements UploaderInterface
     /**
      * @param string $type
      * @param array  $mimeTypes
+     * @return \browner12\uploader\Uploader
      */
     public function setValidMimeTypes($type, array $mimeTypes)
     {
@@ -742,44 +752,58 @@ class Uploader implements UploaderInterface
             default:
                 break;
         }
+
+        return $this;
     }
 
     /**
      * @param int $size
+     * @return \browner12\uploader\Uploader
      */
     public function setMaximumUploadSize($size)
     {
         $this->maximumUploadSize = $size;
+
+        return $this;
     }
 
     /**
      * @param int $quality
+     * @return \browner12\uploader\Uploader
      */
     public function setOptimizedImageQuality($quality)
     {
         if ($quality > 0 && $quality <= 100) {
             $this->optimizedImageQuality = $quality;
         }
+
+        return $this;
     }
 
     /**
      * @param int $width
+     * @return \browner12\uploader\Uploader
      */
     public function setOptimizedMaximumWidth($width)
     {
         if (is_int($width)) {
             $this->optimizedMaximumWidth = $width;
         }
+
+        return $this;
     }
 
     /**
      * @param int $width
+     * @return \browner12\uploader\Uploader
      */
     public function setThumbnailWidth($width)
     {
         if (is_int($width)) {
             $this->thumbnailWidth = $width;
         }
+
+        return $this;
     }
 
     /**
