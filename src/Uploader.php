@@ -113,8 +113,6 @@ class Uploader implements UploaderInterface
     protected $image;
 
     /**
-     * constructor
-     *
      * @param \Intervention\Image\ImageManager $image
      */
     public function __construct(ImageManager $image)
@@ -152,8 +150,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * upload image
-     *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
      * @param string                                              $name
@@ -196,8 +192,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * reprocess originals
-     *
      * in this case we have original files, and want to recreate (or create for the first time) the optimized and thumbnail images
      * could be used when transferring over to a new server, or could be used if the optimized or thumbnail methods change
      *
@@ -248,8 +242,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * create optimized image
-     *
      * we bring the quality down a bit, and make sure it's not bigger than 1000px wide
      * this is what we will serve to users
      *
@@ -297,8 +289,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * create thumbnail image
-     *
      * @param string $path
      * @param string $filename
      * @param bool   $overwrite
@@ -333,8 +323,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * upload video
-     *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
      * @param string                                              $name
@@ -350,8 +338,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * upload audio file
-     *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
      * @param string                                              $name
@@ -367,8 +353,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * upload document
-     *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
      * @param string                                              $name
@@ -384,8 +368,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * upload file
-     *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @param string                                              $path
      * @param string                                              $name
@@ -436,8 +418,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * sanitize the file name
-     *
      * @param \Symfony\Component\HttpFoundation\File\UploadedFile $file
      * @return string
      */
@@ -451,8 +431,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * check file size
-     *
      * @param int $size
      * @throws \browner12\uploader\Exceptions\FileUploadedTooLarge
      */
@@ -465,8 +443,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * check file extension
-     *
      * @param string $extension
      * @param string $type
      * @throws \browner12\uploader\Exceptions\UnapprovedExtension
@@ -483,8 +459,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * check mime type
-     *
      * @param string $mimeType
      * @param string $type
      * @throws \browner12\uploader\Exceptions\UnapprovedMimeType
@@ -501,8 +475,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * create a directory
-     *
      * @param $directory
      * @return bool
      */
@@ -562,8 +534,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * set directory
-     *
      * @param string $type
      * @param string $directory
      * @return string
@@ -631,8 +601,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * get valid extensions
-     *
      * @param string $type
      * @return array
      */
@@ -671,8 +639,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * set valid extensions
-     *
      * @param string $type
      * @param array  $extensions
      */
@@ -707,8 +673,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * get valid mime types
-     *
      * @param string $type
      * @return array
      */
@@ -747,8 +711,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * set valid mime types
-     *
      * @param string $type
      * @param array  $mimeTypes
      */
@@ -783,8 +745,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * set maximum file upload size
-     *
      * @param int $size
      */
     public function setMaximumUploadSize($size)
@@ -793,8 +753,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * set optimized image quality
-     *
      * @param int $quality
      */
     public function setOptimizedImageQuality($quality)
@@ -805,8 +763,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * set optimized maximum width
-     *
      * @param int $width
      */
     public function setOptimizedMaximumWidth($width)
@@ -817,8 +773,6 @@ class Uploader implements UploaderInterface
     }
 
     /**
-     * set thumbnail width
-     *
      * @param int $width
      */
     public function setThumbnailWidth($width)
