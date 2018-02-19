@@ -9,13 +9,11 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ## [2.2.0] - 2018-02-19
 
 ### Added
+- support Laravel auto-discovery
 - support for Laravel v5.6
 
 ### Changed
 - run Travis on PHP 7.1 and 7.2, and remove HHVM
-
-### Added
-- support Laravel auto-discovery
 
 ## [2.1.1] - 2017-10-17
 
