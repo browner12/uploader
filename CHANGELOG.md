@@ -6,6 +6,14 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [2.2.0] - 2018-02-19
+
+### Added
+- support for Laravel v5.6
+
+### Changed
+- run Travis on PHP 7.1 and 7.2, and remove HHVM
+
 ### Added
 - support Laravel auto-discovery
 
@@ -63,7 +71,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v2.1.1...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v2.2.0...HEAD
+[2.2.0]: https://github.com/browner12/uploader/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/browner12/uploader/compare/v2.1.0...v2.1.1
 [2.1.0]: https://github.com/browner12/uploader/compare/v2.0.0...v2.1.0
 [2.0.0]: https://github.com/browner12/uploader/compare/v1.1.0...v2.0.0
