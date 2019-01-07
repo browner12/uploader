@@ -6,6 +6,15 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [3.0.0] - 2019-01-07
+
+### Changed
+- Make PHP 7.1.3 the minimum version requirement.
+
+### Removed
+- drop support for Laravel < 5.6
+- drop PHP 5.6 and 7.0 on Travis
+
 ## [2.3.0] - 2019-01-07
 
 ### Added
@@ -74,7 +83,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v2.3.0...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v3.0.0...HEAD
+[3.0.0]: https://github.com/browner12/uploader/compare/v2.3.0...v3.3.0
 [2.3.0]: https://github.com/browner12/uploader/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/browner12/uploader/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/browner12/uploader/compare/v2.1.0...v2.1.1
