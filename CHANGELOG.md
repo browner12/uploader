@@ -6,6 +6,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+### Added
+- support for Laravel v5.7
+
 ## [2.2.0] - 2018-02-19
 
 ### Added
