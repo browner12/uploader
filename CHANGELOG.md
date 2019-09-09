@@ -6,10 +6,18 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [4.0.0] - 2019-09-08
+
+### Added
+- support for Laravel 6.0
+
+### Removed
+- support for Laravel 5.6, 5.7, and 5.8
+
 ## [3.1.0] - 2019-09-08
 
 ### Added
- -support for Laravel 5.8
+- support for Laravel 5.8
 
 ## [3.0.0] - 2019-01-07
 
