@@ -6,6 +6,11 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [4.0.1] - 2019-09-08
+
+### Changed
+- fix Travis by dropping PHP 7.1
+
 ## [4.0.0] - 2019-09-08
 
 ### Added
