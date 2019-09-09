@@ -6,6 +6,11 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [3.1.0] - 2019-09-08
+
+### Added
+ -support for Laravel 5.8
+
 ## [3.0.0] - 2019-01-07
 
 ### Changed
@@ -83,8 +88,9 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v3.0.0...HEAD
-[3.0.0]: https://github.com/browner12/uploader/compare/v2.3.0...v3.3.0
+[unreleased]: https://github.com/browner12/uploader/compare/v3.1.0...HEAD
+[3.1.0]: https://github.com/browner12/uploader/compare/v3.0.0...v3.1.0
+[3.0.0]: https://github.com/browner12/uploader/compare/v2.3.0...v3.0.0
 [2.3.0]: https://github.com/browner12/uploader/compare/v2.2.0...v2.3.0
 [2.2.0]: https://github.com/browner12/uploader/compare/v2.1.1...v2.2.0
 [2.1.1]: https://github.com/browner12/uploader/compare/v2.1.0...v2.1.1
