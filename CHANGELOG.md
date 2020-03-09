@@ -109,7 +109,8 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 ### Added
 - new uploader package
 
-[unreleased]: https://github.com/browner12/uploader/compare/v4.0.0...HEAD
+[unreleased]: https://github.com/browner12/uploader/compare/v5.0.0...HEAD
+[5.0.0]: https://github.com/browner12/uploader/compare/v4.0.0...v5.0.0
 [4.0.0]: https://github.com/browner12/uploader/compare/v3.1.0...v4.0.0
 [3.1.0]: https://github.com/browner12/uploader/compare/v3.0.0...v3.1.0
 [3.0.0]: https://github.com/browner12/uploader/compare/v2.3.0...v3.0.0
