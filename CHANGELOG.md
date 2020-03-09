@@ -6,6 +6,14 @@ Updates should follow the [Keep a CHANGELOG](http://keepachangelog.com/) princip
 
 ## [UNRELEASED]
 
+## [5.0.0] - 2020-03-08
+
+### Added
+- support Laravel 7
+
+### Removed
+- support for Symfony 3
+
 ## [4.0.1] - 2019-09-08
 
 ### Changed
